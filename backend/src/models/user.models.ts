@@ -8,6 +8,9 @@ const userSchema = new Schema<userSchemaType>({
         type: String,
         required: true,
         trim: true,
+    },firebaseId:{
+        type:String,
+        required:true
     },
     gender: {
         type: String,
