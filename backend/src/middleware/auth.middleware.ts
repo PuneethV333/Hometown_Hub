@@ -1,52 +1,36 @@
 import { NextFunction, Request, Response } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
 
-import { redisClient } from "../config/redis";
-import { config } from "../config/data.config";
-import { AuthToken } from "../types/authMiddleWare.type";
+import admin from "../config/firebase.config";
+import { getError } from "../utils/error.utils";
 
+export const authMiddleWare = async (
+  req: Request,
 
+  res: Response,
 
-
-const authMiddleware = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
+  next: NextFunction,
 ) => {
-    try {
-        const token = req.cookies?.token;
+  try {
+    const authHeader = req.headers.authorization;
 
-        if (!token) {
-            return res.status(401).json({
-                message: "Unauthorized",
-            });
-        }
-
-        const decoded = jwt.verify(
-            token,
-            config.jwtSecret as string
-        ) as AuthToken;
-
-        const session = await redisClient.get(
-            `session:${decoded.id}`
-        );
-
-        if (!session) {
-            return res.status(401).json({
-                message: "Session expired",
-            });
-        }
-
-        req.user = {
-            id: decoded.id,
-        };
-
-        next();
-    } catch (error) {
-        return res.status(401).json({
-            message: "Invalid token",
-        });
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        message: "Unauthorized: No token provided",
+      });
     }
-};
 
-export default authMiddleware;
+    const token = authHeader.split(" ")[1];
+
+    const decodedToken = await admin.auth().verifyIdToken(token);
+
+    req.user = {
+      firebaseUid: decodedToken.uid.toString(),
+    };
+
+    next();
+  } catch (err) {
+    console.error("Firebase Token Verification Error:", err);
+
+    return res.status(401).json(getError(err));
+  }
+};
