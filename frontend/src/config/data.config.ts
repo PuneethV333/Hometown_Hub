@@ -1,4 +1,6 @@
-export const config = {
+import type { EnvConfigType } from "../types/env.type";
+
+export const config:EnvConfigType = {
     firebase: {
         apiKey:
             import.meta.env
@@ -28,4 +30,5 @@ export const config = {
             import.meta.env
                 .VITE_FIREBASE_MEASUREMENT_ID,
     },
+    backend_url:import.meta.env.VITE_BACKEND_URL
 };

@@ -9,6 +9,7 @@ import { errorHanding } from "./middleware/error.middleware";
 import { config } from "./config/data.config";
 import { redisMiddleWare } from "./middleware/redis.middleware";
 import { authRouter } from "./routes/auth.routes";
+import { userRouter } from "./routes/user.routes";
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use(
 app.use(redisMiddleWare);
 
 app.use("/api/auth", authRouter);
+app.use("/api/user", userRouter);
 
 app.get("/test", (_: Request, res: Response) => {
   res.send("Server is running");

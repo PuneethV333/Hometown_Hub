@@ -1,34 +1,30 @@
 import { Request, Response } from "express";
-import User from "../models/user.models";
 import { getError } from "../utils/error.utils";
-import { setValKey } from "../utils/redis.utils";
+import { authResType } from "../types/auth.types";
+import { handleAuth } from "../services/auth.services";
 
-export const authViaGoogle = async (req: Request, res: Response) => {
+export const auth = async (req: Request, res: Response) => {
   try {
     const firebaseUid = req.user?.firebaseUid;
-
     if (!firebaseUid) {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(401).json({
+        message: "firebaseUid not found",
+      });
     }
 
-    let user = await User.findOne({ firebaseId: firebaseUid }).lean();
-    let isNewUser = false;
+    const { user, isNewUser } = await handleAuth(firebaseUid);
 
-    if (!user) {
-      const newUser = new User({ firebaseId: firebaseUid });
-      await newUser.save();
-      user = newUser.toObject();
-      isNewUser = true;
-    }
-
-    const cacheKey = `session:${user._id}`;
-    await setValKey(cacheKey, JSON.stringify(user), 3600);
+    const data: authResType = {
+      firebaseUid: user.firebaseUid,
+      _id: user._id.toString(),
+      isProfileComplete: user.isProfileComplete,
+    };
 
     return res.status(isNewUser ? 201 : 200).json({
-      data: user,
+      data: data,
       message: isNewUser ? "User created" : "User exists",
     });
   } catch (err) {
-    res.status(500).json(getError(err));
+    res.status(400).json(getError(err));
   }
 };

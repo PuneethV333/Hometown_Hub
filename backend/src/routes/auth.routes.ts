@@ -4,4 +4,4 @@ import { authMiddleWare } from "../middleware/auth.middleware";
 
 export const authRouter = Router();
 
-authRouter.post("/google", authMiddleWare, authController.authViaGoogle);
+authRouter.post("/", authMiddleWare, authController.auth);
