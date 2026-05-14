@@ -11,5 +11,6 @@ export interface userSchemaType extends Document {
   role: "Admin" | "Moderator" | "User";
   phoneNo: string;
   email: string;
-  isProfileComplete:boolean
+  isProfileComplete:boolean;
+  authProvider:"google"|"email"
 }

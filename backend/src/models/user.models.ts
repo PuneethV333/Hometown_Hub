@@ -79,6 +79,12 @@ const userSchema = new Schema<userSchemaType>(
 
       default: false,
     },
+    
+    authProvider:{
+        type:String,
+        enum:["google","email"],
+        required:true
+    }
   },
 
   {

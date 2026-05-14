@@ -6,13 +6,14 @@ import { handleAuth } from "../services/auth.services";
 export const auth = async (req: Request, res: Response) => {
   try {
     const firebaseUid = req.user?.firebaseUid;
-    if (!firebaseUid) {
+    const provider = req.user?.provider;
+    if (!firebaseUid || !provider) {
       return res.status(401).json({
         message: "firebaseUid not found",
       });
     }
 
-    const { user, isNewUser } = await handleAuth(firebaseUid);
+    const { user, isNewUser } = await handleAuth(firebaseUid,provider);
 
     const data: authResType = {
       firebaseUid: user.firebaseUid,

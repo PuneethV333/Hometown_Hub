@@ -1,8 +1,11 @@
 import User from "../models/user.models";
 import { getVal, setValKey } from "../utils/redis.utils";
 
-export const getCurrentUser = async (firebaseUid: string) => {
-  const cacheKey = `user:${firebaseUid}`;
+export const getCurrentUser = async (
+  firebaseUid: string,
+  provider: "google" | "email",
+) => {
+  const cacheKey = `user:${firebaseUid}:${provider}`;
 
   const cached = await getVal(cacheKey);
 
@@ -25,7 +28,6 @@ export const getCurrentUser = async (firebaseUid: string) => {
 
   return {
     user,
-
     source: "db",
   };
 };

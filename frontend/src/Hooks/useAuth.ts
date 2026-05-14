@@ -1,13 +1,31 @@
-import { useQuery } from "@tanstack/react-query"
-import * as authApi from "../Api/auth.api"
+import { useMutation } from "@tanstack/react-query";
+
+import * as authApi from "../Api/auth.api";
+
+import { useNavigate } from "react-router-dom";
 
 export const useAuth = () => {
-    return useQuery({
-        queryKey:['ResAuth'],
-        queryFn:authApi.authApi,
-        select:(res) => res.data,
-        retry:false,
-        staleTime: 5 * 60 * 1000,
-    })
-}
+  const navigate = useNavigate();
 
+  return useMutation({
+    mutationKey: ["ResAuth"],
+
+    mutationFn: authApi.authApi,
+
+    retry: false,
+
+    onError: (err) => {
+    //todo:add toast
+      console.log(err);
+    },
+
+    onSuccess: (res) => {
+        //todo: add toast
+      if (res.data.isProfileComplete) {
+        navigate("/home");
+      } else {
+        navigate("/on-boarding");
+      }
+    },
+  });
+};

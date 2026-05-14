@@ -5,14 +5,15 @@ import { getCurrentUser } from "../services/user.services";
 export const getMe = async (req: Request, res: Response) => {
   try {
     const firebaseUid = req.user?.firebaseUid;
+    const provider = req.user?.provider;
 
-    if (!firebaseUid) {
+    if (!firebaseUid || !provider) {
       return res.status(401).json({
         message: "Unauthorized",
       });
     }
 
-    const result = await getCurrentUser(firebaseUid);
+    const result = await getCurrentUser(firebaseUid,provider);
 
     if (!result) {
       return res.status(404).json({

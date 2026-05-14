@@ -23,8 +23,18 @@ export const authMiddleWare = async (
 
     const decodedToken = await admin.auth().verifyIdToken(token);
 
+    const providerMap = {
+      "google.com": "google",
+      password: "email",
+    } as const;
+
+    const firebaseProvider = decodedToken.firebase.sign_in_provider;
+
+    const provider = providerMap[firebaseProvider as keyof typeof providerMap];
+
     req.user = {
       firebaseUid: decodedToken.uid.toString(),
+      provider:provider,
     };
 
     next();
