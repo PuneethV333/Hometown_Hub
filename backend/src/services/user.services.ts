@@ -1,7 +1,5 @@
 import User from "../models/user.models";
-import {
-  onBoardingReqBodyType,
-} from "../types/onBoardingReqBody.types";
+import { onBoardingReqBodyType } from "../types/onBoardingReqBody.types";
 import { getVal, setValKey } from "../utils/redis.utils";
 
 export const getCurrentUser = async (
@@ -56,12 +54,13 @@ export const onBoardingHelper = async (
         city: payload.city,
         dob: payload.dob,
         state: payload.state,
+        town: payload.town,
         isProfileComplete: true,
       },
       { new: true, runValidators: true },
     ).lean();
-    
-    await setValKey(cacheKey,JSON.stringify(user),3600)
+
+    await setValKey(cacheKey, JSON.stringify(user), 3600);
 
     return user;
   } catch (err) {

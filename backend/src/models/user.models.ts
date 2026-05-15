@@ -7,41 +7,36 @@ const userSchema = new Schema<userSchemaType>(
       type: String,
       trim: true,
     },
-
     firebaseUid: {
       type: String,
       required: true,
       unique: true,
     },
-
     gender: {
       type: String,
-      enum: ["Male", "Female",""],
+      enum: ["Male", "Female", ""],
     },
-
+    town: {
+      type: String,
+    },
     city: {
       type: String,
     },
-
     village: {
       type: String,
     },
-
     state: {
       type: String,
     },
-
     photoUrl: {
       type: String,
 
       default:
         "https://res.cloudinary.com/deymewscv/image/upload/v1760774522/hqoltmqamhhjfz7divf1.jpg",
     },
-
     dob: {
       type: Date,
     },
-
     role: {
       type: String,
 
@@ -49,13 +44,11 @@ const userSchema = new Schema<userSchemaType>(
 
       default: "User",
     },
-
     phoneNumber: {
       type: String,
 
       match: [/^(\+91)?[6-9]\d{9}$/, "invalid number"],
     },
-
     email: {
       type: String,
 
@@ -77,23 +70,27 @@ const userSchema = new Schema<userSchemaType>(
         message: "Invalid email format",
       },
     },
-
     isProfileComplete: {
       type: Boolean,
 
       default: false,
     },
-
     authProvider: {
       type: String,
       enum: ["google", "email"],
       required: true,
     },
+    myCommunities: [
+      {
+        communityId: {
+          type: Schema.Types.ObjectId,
+          ref: "Community",
+          required: true,
+        },
+      },
+    ],
   },
-
-  {
-    timestamps: true,
-  },
+  { timestamps: true },
 );
 
 const User: Model<userSchemaType> =

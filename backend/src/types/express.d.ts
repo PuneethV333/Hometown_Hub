@@ -1,11 +1,12 @@
-import { Request } from "express";
+export type AuthProvider = "google" | "email";
+
 
 declare global {
   namespace Express {
     interface Request {
       user?: {
         firebaseUid: string;
-        provider: "google" | "email";
+        provider: AuthProvider;
       };
     }
   }

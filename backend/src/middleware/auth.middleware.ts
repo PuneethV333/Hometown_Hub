@@ -1,21 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import admin from "../config/firebase.config";
 import { getError } from "../utils/error.utils";
+import { AuthProvider } from "../types/express";
 
 
-type AuthProvider = "google" | "email";
-
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        firebaseUid: string;
-        provider: AuthProvider;
-      };
-    }
-  }
-}
 
 export const authMiddleWare = async (
   req: Request,

@@ -10,7 +10,7 @@ import {
 } from "../types/user.types";
 import { useOnBoarding } from "../Hooks/useOnboarding";
 import toast from "react-hot-toast";
-import { useFetchCities, useFetchState } from "../Hooks/useHelpers";
+import { useFetchCities, useFetchState, useFetchTowns } from "../Hooks/useHelpers";
 
 const GENDERS = ["Male", "Female"];
 
@@ -29,6 +29,11 @@ const Onboarding = () => {
     data: citiesData,
     isPending: loadingCities,
   } = useFetchCities();
+  const {
+    mutate: getTowns,
+    data: townData,
+    isPending: loadingTown,
+  } = useFetchTowns();
 
   const [onBoardingReqBody, setOnBoardingReqBody] =
     useState<onBoardingReqBodyType>({
@@ -38,6 +43,7 @@ const Onboarding = () => {
       gender: "",
       city: "",
       state: "",
+      town: "",
       dob: new Date(),
     });
 
@@ -50,6 +56,13 @@ const Onboarding = () => {
       getCities(onBoardingReqBody.state);
     }
   }, [onBoardingReqBody.state]);
+
+  // Fixed: watch city (not town) to fetch towns
+  useEffect(() => {
+    if (onBoardingReqBody.state && onBoardingReqBody.city) {
+      getTowns({ state: onBoardingReqBody.state, town: onBoardingReqBody.city });
+    }
+  }, [onBoardingReqBody.city]);
 
   if (isPending || onBoardingLoading || loadingStates) {
     return <Spinner />;
@@ -70,8 +83,20 @@ const Onboarding = () => {
   };
 
   const handleStateChange = (state: string) => {
-    handleInputChange("state", state);
-    handleInputChange("city", "");
+    setOnBoardingReqBody((prev) => ({
+      ...prev,
+      state,
+      city: "",   // reset city
+      town: "",   // reset town
+    }));
+  };
+
+  const handleCityChange = (city: string) => {
+    setOnBoardingReqBody((prev) => ({
+      ...prev,
+      city,
+      town: "",   // reset town when city changes
+    }));
   };
 
   const handleOnBoarding = async () => {
@@ -88,20 +113,18 @@ const Onboarding = () => {
           errors.gender?.[0] ||
           errors.city?.[0] ||
           errors.state?.[0] ||
+          errors.town?.[0] ||
           errors.dob?.[0] ||
           "Invalid inputs";
 
         toast.error(firstError);
-
         return;
       }
 
       await onBoarding(result.data);
-
       toast.success("Profile completed");
     } catch (err) {
       console.error(err);
-
       toast.error("Failed to complete onboarding");
     }
   };
@@ -110,6 +133,20 @@ const Onboarding = () => {
     ? statesData?.data?.states
     : [];
   const cities = Array.isArray(citiesData?.data) ? citiesData?.data : [];
+  const towns = Array.isArray(townData?.data) ? townData?.data : [];
+
+  const SELECT_STYLE = {
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237b7a9a' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "right 12px center",
+    paddingRight: "32px",
+  } as const;
+
+  const INPUT_CLASS =
+    "w-full bg-[#0d0d12] border border-[#2a2a38] rounded-[10px] px-3.5 py-2.5 text-sm text-[#f0eeff] placeholder:text-[#4a4a62] outline-none focus:border-violet-600 transition-colors";
+  const SELECT_CLASS =
+    INPUT_CLASS + " cursor-pointer appearance-none disabled:opacity-50 disabled:cursor-not-allowed";
+  const LABEL_CLASS = "text-xs font-medium text-[#7b7a9a]";
 
   return (
     <div className="relative min-h-screen bg-[#0d0d12] flex items-center justify-center px-4 py-12 overflow-hidden font-sans">
@@ -123,28 +160,13 @@ const Onboarding = () => {
       />
 
       <div className="relative w-full max-w-2xl bg-[#13131a] border border-[#2a2a38] rounded-2xl p-8 flex flex-col">
+        {/* Logo */}
         <div className="flex items-center gap-2.5 mb-7">
           <div className="w-9 h-9 rounded-[10px] bg-[#1a1230] border border-[#2a2a38] flex items-center justify-center shrink-0">
             <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
               <rect x="1" y="1" width="9" height="9" rx="2" fill="#a78bfa" />
-              <rect
-                x="12"
-                y="1"
-                width="9"
-                height="9"
-                rx="2"
-                fill="#7c3aed"
-                opacity="0.6"
-              />
-              <rect
-                x="1"
-                y="12"
-                width="9"
-                height="9"
-                rx="2"
-                fill="#7c3aed"
-                opacity="0.6"
-              />
+              <rect x="12" y="1" width="9" height="9" rx="2" fill="#7c3aed" opacity="0.6" />
+              <rect x="1" y="12" width="9" height="9" rx="2" fill="#7c3aed" opacity="0.6" />
               <rect x="12" y="12" width="9" height="9" rx="2" fill="#a78bfa" />
             </svg>
           </div>
@@ -153,6 +175,7 @@ const Onboarding = () => {
           </span>
         </div>
 
+        {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-[#f0eeff] tracking-tight mb-1">
             Complete Your Profile
@@ -164,95 +187,70 @@ const Onboarding = () => {
         </div>
 
         <div className="flex flex-col gap-6">
+          {/* Row 1: Email + Name */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-[#7b7a9a]">
-                Email
-              </label>
+              <label className={LABEL_CLASS}>Email</label>
               <input
                 type="email"
                 value={onBoardingReqBody.email}
                 disabled
                 className="w-full bg-[#0d0d12] border border-[#2a2a38] rounded-[10px] px-3.5 py-2.5 text-sm text-[#7b7a9a] placeholder:text-[#4a4a62] outline-none cursor-not-allowed opacity-60"
               />
-              <p className="text-[10px] text-[#4a4a62]">
-                Pre-filled from account
-              </p>
+              <p className="text-[10px] text-[#4a4a62]">Pre-filled from account</p>
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-[#7b7a9a]">
-                Full Name
-              </label>
+              <label className={LABEL_CLASS}>Full Name</label>
               <input
                 type="text"
                 placeholder="John Doe"
                 value={onBoardingReqBody.name}
                 onChange={(e) => handleInputChange("name", e.target.value)}
-                className="w-full bg-[#0d0d12] border border-[#2a2a38] rounded-[10px] px-3.5 py-2.5 text-sm text-[#f0eeff] placeholder:text-[#4a4a62] outline-none focus:border-violet-600 transition-colors"
+                className={INPUT_CLASS}
               />
             </div>
           </div>
 
+          {/* Row 2: Phone + Gender */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-[#7b7a9a]">
-                Phone Number
-              </label>
+              <label className={LABEL_CLASS}>Phone Number</label>
               <input
                 type="tel"
                 placeholder="+91 98765 43210"
                 value={onBoardingReqBody.phoneNumber}
-                onChange={(e) =>
-                  handleInputChange("phoneNumber", e.target.value)
-                }
-                className="w-full bg-[#0d0d12] border border-[#2a2a38] rounded-[10px] px-3.5 py-2.5 text-sm text-[#f0eeff] placeholder:text-[#4a4a62] outline-none focus:border-violet-600 transition-colors"
+                onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
+                className={INPUT_CLASS}
               />
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-[#7b7a9a]">
-                Gender
-              </label>
+              <label className={LABEL_CLASS}>Gender</label>
               <select
                 value={onBoardingReqBody.gender}
                 onChange={(e) => handleInputChange("gender", e.target.value)}
-                className="w-full bg-[#0d0d12] border border-[#2a2a38] rounded-[10px] px-3.5 py-2.5 text-sm text-[#f0eeff] placeholder:text-[#4a4a62] outline-none focus:border-violet-600 transition-colors cursor-pointer appearance-none"
-                style={{
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237b7a9a' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
-                  backgroundRepeat: "no-repeat",
-                  backgroundPosition: "right 12px center",
-                  paddingRight: "32px",
-                }}
+                className={SELECT_CLASS}
+                style={SELECT_STYLE}
               >
-                <option value="" disabled>
-                  Select Gender
-                </option>
+                <option value="" disabled>Select Gender</option>
                 {GENDERS.map((gender) => (
-                  <option key={gender} value={gender}>
-                    {gender}
-                  </option>
+                  <option key={gender} value={gender}>{gender}</option>
                 ))}
               </select>
             </div>
           </div>
 
+          {/* Row 3: State + City */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-[#7b7a9a]">
-                State
-              </label>
+              <label className={LABEL_CLASS}>State</label>
               <select
                 value={onBoardingReqBody.state}
                 onChange={(e) => handleStateChange(e.target.value)}
                 disabled={loadingStates || states.length === 0}
-                className="w-full bg-[#0d0d12] border border-[#2a2a38] rounded-[10px] px-3.5 py-2.5 text-sm text-[#f0eeff] placeholder:text-[#4a4a62] outline-none focus:border-violet-600 transition-colors cursor-pointer appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237b7a9a' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
-                  backgroundRepeat: "no-repeat",
-                  backgroundPosition: "right 12px center",
-                  paddingRight: "32px",
-                }}
+                className={SELECT_CLASS}
+                style={SELECT_STYLE}
               >
                 <option value="" disabled>
                   {loadingStates ? "Loading states..." : "Select State"}
@@ -266,22 +264,13 @@ const Onboarding = () => {
             </div>
 
             <div className="flex flex-col gap-1.5">
-              <label className="text-xs font-medium text-[#7b7a9a]">City</label>
+              <label className={LABEL_CLASS}>City</label>
               <select
                 value={onBoardingReqBody.city}
-                onChange={(e) => handleInputChange("city", e.target.value)}
-                disabled={
-                  !onBoardingReqBody.state ||
-                  loadingCities ||
-                  cities.length === 0
-                }
-                className="w-full bg-[#0d0d12] border border-[#2a2a38] rounded-[10px] px-3.5 py-2.5 text-sm text-[#f0eeff] placeholder:text-[#4a4a62] outline-none focus:border-violet-600 transition-colors cursor-pointer appearance-none disabled:opacity-50 disabled:cursor-not-allowed"
-                style={{
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237b7a9a' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
-                  backgroundRepeat: "no-repeat",
-                  backgroundPosition: "right 12px center",
-                  paddingRight: "32px",
-                }}
+                onChange={(e) => handleCityChange(e.target.value)}
+                disabled={!onBoardingReqBody.state || loadingCities || cities.length === 0}
+                className={SELECT_CLASS}
+                style={SELECT_STYLE}
               >
                 <option value="" disabled>
                   {!onBoardingReqBody.state
@@ -291,18 +280,40 @@ const Onboarding = () => {
                       : "Select City"}
                 </option>
                 {cities.map((city: string) => (
-                  <option key={city} value={city}>
-                    {city}
-                  </option>
+                  <option key={city} value={city}>{city}</option>
                 ))}
               </select>
             </div>
           </div>
 
+          {/* Row 4: Town (full width) */}
           <div className="flex flex-col gap-1.5">
-            <label className="text-xs font-medium text-[#7b7a9a]">
-              Date of Birth
-            </label>
+            <label className={LABEL_CLASS}>Town</label>
+            <select
+              value={onBoardingReqBody.town}
+              onChange={(e) => handleInputChange("town", e.target.value)}
+              disabled={!onBoardingReqBody.city || loadingTown || towns.length === 0}
+              className={SELECT_CLASS}
+              style={SELECT_STYLE}
+            >
+              <option value="" disabled>
+                {!onBoardingReqBody.city
+                  ? "Select city first"
+                  : loadingTown
+                    ? "Loading towns..."
+                    : towns.length === 0
+                      ? "No towns available"
+                      : "Select Town"}
+              </option>
+              {towns.map((town: string) => (
+                <option key={town} value={town}>{town}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Date of Birth */}
+          <div className="flex flex-col gap-1.5">
+            <label className={LABEL_CLASS}>Date of Birth</label>
             <input
               type="date"
               value={
@@ -311,21 +322,18 @@ const Onboarding = () => {
                   : ""
               }
               onChange={(e) => {
-                const dateValue = e.target.value
-                  ? new Date(e.target.value)
-                  : new Date();
+                const dateValue = e.target.value ? new Date(e.target.value) : new Date();
                 handleInputChange("dob", dateValue);
               }}
-              className="w-full bg-[#0d0d12] border border-[#2a2a38] rounded-[10px] px-3.5 py-2.5 text-sm text-[#f0eeff] placeholder:text-[#4a4a62] outline-none focus:border-violet-600 transition-colors cursor-pointer"
-              style={{
-                colorScheme: "dark",
-              }}
+              className={INPUT_CLASS + " cursor-pointer"}
+              style={{ colorScheme: "dark" }}
             />
           </div>
 
+          {/* Submit */}
           <button
             onClick={handleOnBoarding}
-            disabled={onBoardingLoading || loadingCities}
+            disabled={onBoardingLoading || loadingCities || loadingTown}
             className="w-full py-3 mt-4 rounded-[10px] text-white text-sm font-semibold tracking-tight cursor-pointer border-0
               bg-linear-to-br from-violet-600 to-violet-800
               shadow-[0_0_24px_rgba(124,58,237,0.35)]
@@ -336,8 +344,7 @@ const Onboarding = () => {
         </div>
 
         <p className="text-center text-xs text-[#7b7a9a] mt-6">
-          Your profile helps us create personalized community connections for
-          you.
+          Your profile helps us create personalized community connections for you.
         </p>
       </div>
     </div>

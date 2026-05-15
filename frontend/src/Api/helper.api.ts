@@ -20,3 +20,15 @@ export const fetchCitiesApi = async (state:string) => {
   );  
   return res.data
 }
+
+export const fetchTownsApi = async ({state,town}:{state:string,town:string}) => {
+    const res = await axios.post(
+    "https://countriesnow.space/api/v0.1/countries/state/cities/town",
+    {
+      country: "India",
+      state,
+      town
+    }
+  );  
+  return res.data
+}

@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query"
-import { fetchCitiesApi, fetchStatesApi } from "../Api/helper.api"
+import { fetchCitiesApi,fetchTownsApi, fetchStatesApi } from "../Api/helper.api"
 
 export const useFetchState = () => {
     return useMutation({
@@ -11,6 +11,14 @@ export const useFetchState = () => {
 export const useFetchCities = () => {
     return useMutation({
         mutationFn:fetchCitiesApi,
-        mutationKey:["states"],
+        mutationKey:["city"],
     })
 }
+
+export const useFetchTowns = () => {
+    return useMutation({
+        mutationFn:fetchTownsApi,
+        mutationKey:["city"],
+    })
+}
+

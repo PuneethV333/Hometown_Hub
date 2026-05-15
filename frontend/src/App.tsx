@@ -11,6 +11,7 @@ import Spinner from "./components/Spinner";
 const Login = lazy(() => import("./Pages/Login"));
 const Onboarding = lazy(() => import("./Pages/Onboarding"));
 const Home = lazy(() => import("./Pages/Home"));
+const Dashboard = lazy(() => import("./Pages/SubPages/dashboard/Dashboard"));
 
 const App = () => {
   const [user, authLoading] = useAuthState(Auth);
@@ -44,10 +45,10 @@ const App = () => {
             path="/on-boarding"
             element={user ? <Onboarding /> : <Navigate to="/login" />}
           />
-          <Route
-            path="/home"
-            element={user ? <Home /> : <Navigate to="/login" />}
-          />
+          
+          <Route path="/home" element={user ? <Home /> : <Navigate to="/login" />}>
+            <Route index element={<Dashboard/>}/>
+          </Route>
         </Routes>
       </Suspense>
     </>
