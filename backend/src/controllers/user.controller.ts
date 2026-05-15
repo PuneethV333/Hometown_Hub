@@ -10,14 +10,16 @@ export const getMe = async (req: Request, res: Response) => {
     if (!firebaseUid || !provider) {
       return res.status(401).json({
         message: "Unauthorized",
+        firebaseUid: firebaseUid,
       });
     }
 
-    const result = await getCurrentUser(firebaseUid,provider);
+    const result = await getCurrentUser(firebaseUid, provider);
 
     if (!result) {
       return res.status(404).json({
         message: "User not found",
+        firebaseUid: firebaseUid,
       });
     }
 

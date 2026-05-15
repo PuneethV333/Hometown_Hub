@@ -9,7 +9,10 @@ export const handleAuth = async (
   let isNewUser = false;
 
   if (!user) {
-    const newUser = new User({ firebaseUid: firebaseUid, authProvider: provider });
+    const newUser = new User({
+      firebaseUid: firebaseUid,
+      authProvider: provider,
+    });
     await newUser.save();
     user = newUser.toObject();
     isNewUser = true;

@@ -5,7 +5,7 @@ import compression from "compression";
 import rateLimit from "express-rate-limit";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
-import { errorHanding } from "./middleware/error.middleware";
+import { errorHandling } from "./middleware/error.middleware";
 import { config } from "./config/data.config";
 import { redisMiddleWare } from "./middleware/redis.middleware";
 import { authRouter } from "./routes/auth.routes";
@@ -52,6 +52,6 @@ app.use((_: Request, res: Response) => {
   });
 });
 
-app.use(errorHanding);
+app.use(errorHandling);
 
 export default app;
