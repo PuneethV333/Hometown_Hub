@@ -9,8 +9,9 @@ export interface userSchemaType extends Document {
   photoUrl: string;
   dob: Date;
   role: "Admin" | "Moderator" | "User";
-  phoneNo: string;
+  phoneNumber: string;
   email: string;
+  state:string;
   isProfileComplete:boolean;
-  authProvider:"google"|"email"
+  authProvider:"google"|"email"|""
 }

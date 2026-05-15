@@ -5,3 +5,4 @@ import { authMiddleWare } from "../middleware/auth.middleware";
 export const userRouter = Router()
 
 userRouter.get('/getMe',authMiddleWare,userController.getMe)
+userRouter.post('/on-boarding',authMiddleWare,userController.onBoarding)

@@ -202,6 +202,7 @@ const Login = () => {
               </a>
             </div>
           )} */}
+          
           <button
             onClick={handleAuth}
             className="w-full py-3 mt-1 rounded-[10px] text-white text-sm font-semibold tracking-tight cursor-pointer border-0

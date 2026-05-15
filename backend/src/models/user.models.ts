@@ -16,7 +16,7 @@ const userSchema = new Schema<userSchemaType>(
 
     gender: {
       type: String,
-      enum: ["Male", "Female"],
+      enum: ["Male", "Female",""],
     },
 
     city: {
@@ -24,6 +24,10 @@ const userSchema = new Schema<userSchemaType>(
     },
 
     village: {
+      type: String,
+    },
+
+    state: {
       type: String,
     },
 
@@ -46,7 +50,7 @@ const userSchema = new Schema<userSchemaType>(
       default: "User",
     },
 
-    phoneNo: {
+    phoneNumber: {
       type: String,
 
       match: [/^(\+91)?[6-9]\d{9}$/, "invalid number"],
@@ -79,12 +83,12 @@ const userSchema = new Schema<userSchemaType>(
 
       default: false,
     },
-    
-    authProvider:{
-        type:String,
-        enum:["google","email"],
-        required:true
-    }
+
+    authProvider: {
+      type: String,
+      enum: ["google", "email"],
+      required: true,
+    },
   },
 
   {
