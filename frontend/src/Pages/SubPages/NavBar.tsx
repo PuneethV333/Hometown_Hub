@@ -8,18 +8,20 @@ import { logout } from "../../services/auth.services";
 const NavBar = () => {
   const navigate = useNavigate();
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [`searchQuery`, setSearchQuery] = useState("");
 
-  const {data:user,isPending} = useGetMe()
-  
-  
-  if(isPending){
-    <Spinner/>
+  const { data: user, isPending } = useGetMe();
+
+  if (isPending) {
+    <Spinner />;
   }
-  
+
   const handleLogout = async () => {
     try {
-      await logout();
+      const res = await logout();
+      if (!res) {
+        toast.error("Logged out failed");
+      }
       toast.success("Logged out successfully");
       navigate("/login");
     } catch (err) {
@@ -47,7 +49,6 @@ const NavBar = () => {
 
   return (
     <div className="h-16 px-6 flex items-center justify-between">
-      
       <div className="flex-1 max-w-md">
         <form onSubmit={handleSearch} className="relative">
           <input
@@ -73,9 +74,7 @@ const NavBar = () => {
         </form>
       </div>
 
-      
       <div className="flex items-center gap-4 ml-6">
-        
         <button className="relative p-2 text-[#7b7a9a] hover:text-[#f0eeff] hover:bg-[#1a1a24] rounded-lg transition-all">
           <svg
             className="w-5 h-5"
@@ -93,16 +92,13 @@ const NavBar = () => {
           <span className="absolute top-1 right-1 w-2 h-2 bg-violet-600 rounded-full"></span>
         </button>
 
-        
         <div className="w-px h-6 bg-[#2a2a38]"></div>
 
-        
         <div className="relative">
           <button
             onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
             className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-[#1a1a24] transition-all"
           >
-            
             <div className="w-8 h-8 rounded-lg bg-linear-to-br from-violet-600 to-violet-800 flex items-center justify-center text-xs font-semibold text-white border border-[#2a2a38]">
               {user?.photoUrl ? (
                 <img
@@ -115,7 +111,6 @@ const NavBar = () => {
               )}
             </div>
 
-            
             <div className="flex items-center gap-2">
               <div className="text-left hidden sm:block">
                 <p className="text-xs font-medium text-[#f0eeff] leading-none">
@@ -143,7 +138,6 @@ const NavBar = () => {
             </div>
           </button>
 
-          
           {isProfileMenuOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-[#13131a] border border-[#2a2a38] rounded-lg shadow-lg z-50">
               <div className="px-4 py-3 border-b border-[#2a2a38]">
