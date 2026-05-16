@@ -30,7 +30,6 @@ const userSchema = new Schema<userSchemaType>(
     },
     photoUrl: {
       type: String,
-
       default:
         "https://res.cloudinary.com/deymewscv/image/upload/v1760774522/hqoltmqamhhjfz7divf1.jpg",
     },

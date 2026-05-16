@@ -1,8 +1,29 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import NavBar from "./SubPages/NavBar";
 import SideBar from "./SubPages/SideBar";
+import { useGetMe } from "../Hooks/useGetMe";
+import Spinner from "../components/Spinner";
+import toast from "react-hot-toast";
+import { useEffect } from "react";
 
 const Home = () => {
+  const { data, isPending } = useGetMe();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (data && !data.isProfileComplete) {
+      toast("Complete onboarding!", {
+        icon: "🙅",
+      });
+
+      navigate("/on-boarding");
+    }
+  }, [data, navigate]);
+
+  if (isPending) {
+    return <Spinner />;
+  }
+
   return (
     <div className="flex h-screen bg-[#0d0d12]">
       <aside className="w-64 border-r border-[#2a2a38] flex flex-col bg-[#0d0d12]">

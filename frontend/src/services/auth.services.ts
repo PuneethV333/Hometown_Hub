@@ -17,6 +17,9 @@ export const signInViaEmail = async (payload: signInViaEmailType) => {
       toast.error("payload not provided");
       return;
     }
+    
+    await signOut(Auth);
+
 
     const res = await signInWithEmailAndPassword(
       Auth,
@@ -45,6 +48,8 @@ export const signUpViaEmail = async (payload: signUpViaEmailType) => {
       toast.error("payload not provided");
       return;
     }
+    
+    await signOut(Auth);
 
     const res = await createUserWithEmailAndPassword(
       Auth,
@@ -68,6 +73,9 @@ export const signUpViaEmail = async (payload: signUpViaEmailType) => {
 
 export const viaGoogle = async () => {
   try {
+    
+    await signOut(Auth);
+
     const res = await signInWithPopup(Auth, googleAuthProvider);
     if (!res) {
       toast.error("signUp failed");

@@ -10,6 +10,7 @@ import { config } from "./config/data.config";
 import { redisMiddleWare } from "./middleware/redis.middleware";
 import { authRouter } from "./routes/auth.routes";
 import { userRouter } from "./routes/user.routes";
+import { postRouter } from "./routes/post.routes";
 
 const app = express();
 
@@ -40,6 +41,7 @@ app.use(redisMiddleWare);
 
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
+app.use("/api/post", postRouter);
 
 app.get("/test", (_: Request, res: Response) => {
   res.send("Server is running");

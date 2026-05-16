@@ -8,7 +8,7 @@ import { logout } from "../../services/auth.services";
 const NavBar = () => {
   const navigate = useNavigate();
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-  const [`searchQuery`, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { data: user, isPending } = useGetMe();
 

@@ -102,7 +102,6 @@ const SideBar = ({ user }: SideBarProps) => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  
   const communities = user?.myCommunities
     ? user.myCommunities.map((item) => {
         const community =
