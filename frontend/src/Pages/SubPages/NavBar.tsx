@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Auth } from "../../config/firebase.config";
 import toast from "react-hot-toast";
 import { useGetMe } from "../../Hooks/useGetMe";
 import Spinner from "../../components/Spinner";
+import { logout } from "../../services/auth.services";
 
 const NavBar = () => {
   const navigate = useNavigate();
@@ -19,7 +19,7 @@ const NavBar = () => {
   
   const handleLogout = async () => {
     try {
-      await Auth.signOut();
+      await logout();
       toast.success("Logged out successfully");
       navigate("/login");
     } catch (err) {

@@ -7,6 +7,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signOut,
 } from "firebase/auth";
 import { Auth, googleAuthProvider } from "../config/firebase.config";
 
@@ -78,6 +79,16 @@ export const viaGoogle = async () => {
     return res.user;
   } catch (err) {
     toast.error("signIn failed");
+    console.error(err);
+  }
+};
+
+export const logout = async () => {
+  try {
+    await signOut(Auth);
+    return true;
+  } catch (err) {
+    toast.error("logout failed");
     console.error(err);
   }
 };
