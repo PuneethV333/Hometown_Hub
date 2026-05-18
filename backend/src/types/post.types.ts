@@ -1,12 +1,6 @@
 import mongoose from "mongoose";
 
-export interface commentType {
-  content: string;
-  by: mongoose.Types.ObjectId;
-  likes: number;
-  likedBy: mongoose.Types.ObjectId[];
-  createdAt?: Date;
-}
+
 
 export interface postType {
   userId: mongoose.Types.ObjectId;
@@ -19,7 +13,7 @@ export interface postType {
 
   commentNumber: number;
 
-  comments: commentType[];
+  comments: mongoose.Types.ObjectId[];
 
   createdAt?: Date;
   updatedAt?: Date;

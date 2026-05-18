@@ -40,10 +40,11 @@ const eventSchema = new Schema<IEvent>(
       default: "upcoming",
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 const Event: Model<IEvent> =
-  mongoose.models.Event || mongoose.model<IEvent>("Event", eventSchema, "events");
+  mongoose.models.Event ||
+  mongoose.model<IEvent>("Event", eventSchema, "events");
 
 export default Event;

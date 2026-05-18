@@ -42,6 +42,7 @@ app.use(redisMiddleWare);
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/post", postRouter);
+app.use("/api/event", postRouter);
 
 app.get("/test", (_: Request, res: Response) => {
   res.send("Server is running");

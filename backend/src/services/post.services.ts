@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import Community from "../models/community.models";
 import Post from "../models/post.models";
 import User from "../models/user.models";
-import { getVal, setValKey } from "../utils/redis.utils";
+import { clearCache, getVal, setValKey } from "../utils/redis.utils";
 
 interface GetPostsOptions {
   page?: number;
@@ -18,7 +18,7 @@ export const getPostServices = async (
   const cached = await getVal(cacheKey);
 
   if (cached) {
-    return {posts:JSON.parse(cached),source:"redis"};
+    return { posts: JSON.parse(cached), source: "redis" };
   }
 
   const user = await User.findOne({ firebaseUid })
@@ -51,22 +51,62 @@ export const getPostServices = async (
 
   const skip = (page - 1) * limit;
 
-  const [posts,_] = await Promise.all([
+  const [posts, _] = await Promise.all([
     Post.find({ communityId: { $in: communityIds } })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .populate("userId", "name avatar")
+      .populate("userId")
       .populate("communityId", "name type icon")
       .lean(),
 
     Post.countDocuments({ communityId: { $in: communityIds } }),
   ]);
-  
-  await setValKey(cacheKey,JSON.stringify(posts))
+
+  await setValKey(cacheKey, JSON.stringify(posts));
 
   return {
     posts,
-    source:"db"
+    source: "db",
   };
+};
+
+export const addPostServices = async (
+  firebaseUid: string,
+  content = "",
+  image = "",
+  communityId: string,
+) => {
+  try {
+    const user = await User.findOne({ firebaseUid });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const isFound = user.myCommunities.some(
+      (x: mongoose.Types.ObjectId) => x.toString() === communityId,
+    );
+
+    if (!isFound) {
+      throw new Error("User can't post in this community");
+    }
+
+    const newPost = await Post.create({
+      userId: user._id,
+      communityId,
+      content,
+      image,
+    });
+
+    if (!newPost) {
+      throw new Error("new post failed to create");
+    }
+
+    await clearCache(`post:${firebaseUid}:*`);
+
+    return newPost;
+  } catch (err) {
+    throw err;
+  }
 };

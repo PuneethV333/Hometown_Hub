@@ -1,8 +1,5 @@
 import mongoose, { Document } from "mongoose";
-
-export interface community{
-    communityId:mongoose.Types.ObjectId
-}
+import {z} from "zod"
 
 export interface userSchemaType extends Document {
   name: string;
@@ -19,5 +16,12 @@ export interface userSchemaType extends Document {
   state:string;
   isProfileComplete:boolean;
   authProvider:"google"|"email"|"",
-  myCommunities:community[]
+  myCommunities:mongoose.Types.ObjectId[]
 }
+
+
+export const addPostReqBody = z.object({
+    content:z.string().default(""),
+    image:z.url(),
+    communityId:z.string()
+})
