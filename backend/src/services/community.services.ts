@@ -8,9 +8,9 @@ export const getSuggestedCommunitiesService = async (firebaseUid: string) => {
 
     const cached = await getVal(cacheKey);
 
-    // if (cached) {
-    //   return { data: JSON.parse(cached), source: "redis" };
-    // }
+    if (cached) {
+      return { data: JSON.parse(cached), source: "redis" };
+    }
 
     const user = await User.findOne({ firebaseUid: firebaseUid });
 
