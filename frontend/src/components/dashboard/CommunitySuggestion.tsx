@@ -1,8 +1,16 @@
+import { useGetSuggestedCommunities } from "../../Hooks/useCommunity";
+import Spinner from "../Spinner";
 
 const CommunitySuggestion = () => {
-  return (
-    <div>CommunitySuggestion</div>
-  )
-}
+  const { data, isPending } = useGetSuggestedCommunities();
 
-export default CommunitySuggestion
+  if (isPending) {
+    <Spinner />;
+  }
+
+  console.log(data);
+
+  return <div>CommunitySuggestion</div>;
+};
+
+export default CommunitySuggestion;

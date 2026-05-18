@@ -11,6 +11,8 @@ import { redisMiddleWare } from "./middleware/redis.middleware";
 import { authRouter } from "./routes/auth.routes";
 import { userRouter } from "./routes/user.routes";
 import { postRouter } from "./routes/post.routes";
+import { eventRouter } from "./routes/event.routes";
+import { communityRouter } from "./routes/community.routes";
 
 const app = express();
 
@@ -41,8 +43,9 @@ app.use(redisMiddleWare);
 
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
-app.use("/api/post", postRouter);
-app.use("/api/event", postRouter);
+app.use("/api/posts", postRouter);
+app.use("/api/event", eventRouter);
+app.use("/api/community", communityRouter);
 
 app.get("/test", (_: Request, res: Response) => {
   res.send("Server is running");

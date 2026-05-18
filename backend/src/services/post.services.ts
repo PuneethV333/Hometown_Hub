@@ -17,9 +17,9 @@ export const getPostServices = async (
 
   const cached = await getVal(cacheKey);
 
-  if (cached) {
-    return { posts: JSON.parse(cached), source: "redis" };
-  }
+//   if (cached) {
+//     return { posts: JSON.parse(cached), source: "redis" };
+//   }
 
   const user = await User.findOne({ firebaseUid })
     .select("myCommunities state")
