@@ -6,6 +6,7 @@ const userSchema = new Schema<userSchemaType>(
     name: {
       type: String,
       trim: true,
+      default:"guest"
     },
     firebaseUid: {
       type: String,

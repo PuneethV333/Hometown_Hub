@@ -1,6 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { authApi } from "../Api/auth.api";
+import toast from "react-hot-toast";
 
 export const useAuth = () => {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ export const useAuth = () => {
     retry: false,
 
     onError: (err) => {
-      console.log(err);
+        toast.error(err.message)
     },
 
     onSuccess: (res) => {

@@ -16,7 +16,6 @@ export const getPostServices = async (
   const cacheKey = `post:${firebaseUid}:${page}:${limit}`;
 
   const cached = await getVal(cacheKey);
-
   if (cached) {
     return { posts: JSON.parse(cached), source: "redis" };
   }
@@ -34,39 +33,41 @@ export const getPostServices = async (
   let communityIds: mongoose.Types.ObjectId[];
 
   if (!user.myCommunities || user.myCommunities.length === 0) {
-    const communities = await Community.find({
-      "location.state": user.state,
-    })
+    const communities = await Community.find({ "location.state": user.state })
       .select("_id")
       .lean();
-
     communityIds = communities.map((c: any) => c._id);
   } else {
-    communityIds = user.myCommunities.map((c: any) => c._id ?? c);
+    communityIds = user.myCommunities.map(
+      (c: any) => c.communityId?._id ?? c.communityId ?? c,
+    );
   }
 
   if (communityIds.length === 0) {
-    return { posts: [], total: 0, page, totalPages: 0 };
+    return { posts: [], total: 0, page, totalPages: 0, source: "db" };
   }
 
   const skip = (page - 1) * limit;
 
-  const [posts, _] = await Promise.all([
+  const [posts, total] = await Promise.all([
     Post.find({ communityId: { $in: communityIds } })
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .populate("userId")
+      .populate("userId", "name photoUrl")
       .populate("communityId", "name type icon")
       .lean(),
 
     Post.countDocuments({ communityId: { $in: communityIds } }),
   ]);
 
-  await setValKey(cacheKey, JSON.stringify(posts));
+  await setValKey(cacheKey, JSON.stringify({ posts, total }), 60);
 
   return {
     posts,
+    total,
+    page,
+    totalPages: Math.ceil(total / limit),
     source: "db",
   };
 };

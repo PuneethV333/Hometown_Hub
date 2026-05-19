@@ -25,7 +25,7 @@ const Home = () => {
   }
 
   return (
-    <div className="flex h-screen bg-[#0d0d12]">
+    <div className="flex h-screen bg-[#0d0d12] overflow-auto no-scrollbar"> 
       <aside className="w-64 border-r border-[#2a2a38] flex flex-col bg-[#0d0d12]">
         <SideBar />
       </aside>
