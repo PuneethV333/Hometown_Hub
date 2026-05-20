@@ -9,8 +9,16 @@ import {
   Settings,
   LogOut,
 } from "lucide-react";
-import { useGetMe } from "../../Hooks/useGetMe";
 import { logout } from "../../services/auth.services";
+
+interface NavBarProps {
+  user?: {
+    name?: string;
+    photoUrl?: string;
+    role?: string;
+    email?: string;
+  };
+}
 
 const getInitials = (name?: string) => {
   if (!name) return "U";
@@ -22,12 +30,10 @@ const getInitials = (name?: string) => {
     .slice(0, 2);
 };
 
-const NavBar = () => {
+const NavBar = ({ user }: NavBarProps) => {
   const navigate = useNavigate();
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-
-  const { data: user } = useGetMe();
 
   const handleLogout = async () => {
     try {

@@ -19,7 +19,7 @@ const Feed = () => {
     );
   }
 
-  const posts = data ?? [];
+  const posts = data.posts ?? [];
 
   return (
     <div className="flex flex-col gap-4">
@@ -29,7 +29,9 @@ const Feed = () => {
         <div className="flex flex-col items-center justify-center py-20 gap-3 rounded-2xl border border-[#2a2a38] bg-[#13131a]">
           <span className="text-4xl">📭</span>
           <p className="text-sm font-medium text-[#6a6a8a]">No posts yet</p>
-          <p className="text-xs text-[#3a3a52]">Join communities to see posts from your hometown</p>
+          <p className="text-xs text-[#3a3a52]">
+            Join communities to see posts from your hometown
+          </p>
         </div>
       ) : (
         posts.map((post: any) => <PostCard key={post._id} post={post} />)

@@ -16,10 +16,10 @@ export const getCurrentUser = async (
       source: "redis",
     };
   }
-
+  
   const user = await User.findOne({
     firebaseUid,
-  }).lean();
+  }).populate("myCommunities.communityId").lean()
 
   if (!user) {
     return null;

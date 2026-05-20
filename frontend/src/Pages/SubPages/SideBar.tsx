@@ -57,6 +57,11 @@ const SideBar = ({ user }: SideBarProps) => {
         : (item.communityId as Community),
     )
     .filter((c): c is Community => c !== null);
+    
+    
+    
+    console.log(user);
+    
 
   return (
     <div className="flex flex-col h-full">
