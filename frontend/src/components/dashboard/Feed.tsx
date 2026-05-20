@@ -7,8 +7,9 @@ import PostCard from "./Helpers/PostCard";
 
 const Feed = () => {
   const { data, isPending, isError } = useGetPost();
-
-  if (isPending) return <FeedSkeleton />;
+  
+  const posts = data?.posts ?? [];
+  if (isPending)  <FeedSkeleton />;
 
   if (isError) {
     return (
@@ -19,7 +20,6 @@ const Feed = () => {
     );
   }
 
-  const posts = data.posts ?? [];
 
   return (
     <div className="flex flex-col gap-4">

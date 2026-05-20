@@ -39,9 +39,9 @@ export const scanKeys = async (pattern: string): Promise<string[]> => {
 };
 
 export const clearCache = async (cacheKey: string) => {
-  const keys = await redisClient.keys(cacheKey);
+const keys = await redisClient.keys(cacheKey);
 
-  if (keys.length > 0) {
+if (keys.length > 0) {
     await redisClient.del(keys);
-  }
+}
 };

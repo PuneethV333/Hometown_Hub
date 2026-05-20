@@ -111,3 +111,41 @@ export const addPostServices = async (
     throw err;
   }
 };
+
+export const likePostServices = async (postId: string, firebaseUid: string) => {
+  try {
+    const user = await User.findOne({ firebaseUid }).select("_id").lean();
+
+    if (!user) {
+      const err: any = new Error("User not found");
+      err.status = 404;
+      throw err;
+    }
+
+    const post = await Post.findById(postId).select("likedBy").lean();
+
+    if (!post) {
+      const err: any = new Error("Post not found");
+      err.status = 404;
+      throw err;
+    }
+
+    const alreadyLiked = post.likedBy.some(
+      (id: any) => id.toString() === user._id.toString(),
+    );
+
+    const updated = await Post.findByIdAndUpdate(
+      postId,
+      alreadyLiked
+        ? { $inc: { likes: -1 }, $pull: { likedBy: user._id } }
+        : { $inc: { likes: 1 }, $push: { likedBy: user._id } },
+      { new: true },
+    ).lean();
+
+    await clearCache(`post:${firebaseUid}:*`);
+
+    return { post: updated, liked: !alreadyLiked };
+  } catch (err) {
+    throw err;
+  }
+};
