@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getPostApi, likePostApi } from "../Api/post.api";
+import { addPostApi, getPostApi, likePostApi } from "../Api/post.api";
 import { Auth } from "../config/firebase.config";
+import type { addPostPayloadType } from "../types/post.types";
 
 export const useGetPost = () => {
   return useQuery({
     queryKey: ["posts"],
     queryFn: () => getPostApi(),
-    // no select — raw response stays in cache
     enabled: !!Auth.currentUser,
     retry: false,
   });
@@ -58,6 +58,22 @@ export const useLikePost = () => {
 
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+  });
+};
+
+export const useAddPost = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: addPostPayloadType) => addPostApi(payload),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+
+    onError: (err) => {
+      console.error("Failed to create post:", err);
     },
   });
 };

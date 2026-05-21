@@ -1,3 +1,4 @@
+import type { addPostPayloadType } from "../types/post.types";
 import { api } from "../utils/api.utils";
 
 export const getPostApi = async () => {
@@ -5,8 +6,12 @@ export const getPostApi = async () => {
   return res.data;
 };
 
-
 export const likePostApi = async (id:string) => {
     const res = await api.post(`/api/posts/${id}/like`)
+    return res.data
+}
+
+export const addPostApi = async (payload:addPostPayloadType) => {
+    const res = await api.post("/api/posts/add",payload);
     return res.data
 }

@@ -57,7 +57,7 @@ const Onboarding = () => {
     }
   }, [onBoardingReqBody.state]);
 
-  // Fixed: watch city (not town) to fetch towns
+  
   useEffect(() => {
     if (onBoardingReqBody.state && onBoardingReqBody.city) {
       getTowns({ state: onBoardingReqBody.state, town: onBoardingReqBody.city });
@@ -86,8 +86,8 @@ const Onboarding = () => {
     setOnBoardingReqBody((prev) => ({
       ...prev,
       state,
-      city: "",   // reset city
-      town: "",   // reset town
+      city: "",   
+      town: "",   
     }));
   };
 
@@ -95,7 +95,7 @@ const Onboarding = () => {
     setOnBoardingReqBody((prev) => ({
       ...prev,
       city,
-      town: "",   // reset town when city changes
+      town: "",   
     }));
   };
 

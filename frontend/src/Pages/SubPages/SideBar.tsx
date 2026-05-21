@@ -11,14 +11,14 @@ import {
   Compass,
 } from "lucide-react";
 
-interface Community {
+export interface Community {
   _id: string;
   name: string;
   image?: string;
   memberCount?: number;
 }
 
-interface SideBarProps {
+export interface SideBarProps {
   user?: {
     name?: string;
     photoUrl?: string;
@@ -57,11 +57,7 @@ const SideBar = ({ user }: SideBarProps) => {
         : (item.communityId as Community),
     )
     .filter((c): c is Community => c !== null);
-    
-    
-    
-    console.log(user);
-    
+
 
   return (
     <div className="flex flex-col h-full">

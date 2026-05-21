@@ -17,4 +17,8 @@ export const config: EnvConfigType = {
     measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
   },
   backend_url: import.meta.env.VITE_BACKEND_URL,
+
+  cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME,
+
+  uploadPreset: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
 };

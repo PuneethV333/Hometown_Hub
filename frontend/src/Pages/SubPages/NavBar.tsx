@@ -10,6 +10,7 @@ import {
   LogOut,
 } from "lucide-react";
 import { logout } from "../../services/auth.services";
+import { getInitials } from "../../utils/getInitials";
 
 interface NavBarProps {
   user?: {
@@ -19,16 +20,6 @@ interface NavBarProps {
     email?: string;
   };
 }
-
-const getInitials = (name?: string) => {
-  if (!name) return "U";
-  return name
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .toUpperCase()
-    .slice(0, 2);
-};
 
 const NavBar = ({ user }: NavBarProps) => {
   const navigate = useNavigate();
@@ -58,7 +49,6 @@ const NavBar = ({ user }: NavBarProps) => {
 
   return (
     <div className="h-16 px-6 flex items-center justify-between">
-      {/* Search */}
       <div className="flex-1 max-w-md">
         <form onSubmit={handleSearch} className="relative">
           <input
@@ -76,7 +66,6 @@ const NavBar = ({ user }: NavBarProps) => {
       </div>
 
       <div className="flex items-center gap-4 ml-6">
-        {/* Notification bell */}
         <button className="relative p-2 text-[#7b7a9a] hover:text-[#f0eeff] hover:bg-[#1a1a24] rounded-lg transition-all">
           <Bell size={18} />
           <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-violet-500 rounded-full" />
@@ -84,13 +73,11 @@ const NavBar = ({ user }: NavBarProps) => {
 
         <div className="w-px h-6 bg-[#2a2a38]" />
 
-        {/* Profile dropdown */}
         <div className="relative">
           <button
             onClick={() => setIsProfileMenuOpen((v) => !v)}
             className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg hover:bg-[#1a1a24] transition-all"
           >
-            {/* Avatar */}
             <div className="w-8 h-8 rounded-lg bg-linear-to-br from-violet-600 to-violet-800 flex items-center justify-center text-xs font-semibold text-white border border-[#2a2a38] overflow-hidden shrink-0">
               {user?.photoUrl ? (
                 <img
@@ -103,7 +90,6 @@ const NavBar = ({ user }: NavBarProps) => {
               )}
             </div>
 
-            {/* Name + role */}
             <div className="hidden sm:block text-left">
               <p className="text-xs font-medium text-[#f0eeff] leading-none">
                 {user?.name ?? "User"}
@@ -121,10 +107,8 @@ const NavBar = ({ user }: NavBarProps) => {
             />
           </button>
 
-          {/* Dropdown */}
           {isProfileMenuOpen && (
             <div className="absolute right-0 mt-2 w-48 bg-[#13131a] border border-[#2a2a38] rounded-xl shadow-xl z-50 overflow-hidden">
-              {/* User info */}
               <div className="px-4 py-3 border-b border-[#2a2a38]">
                 <p className="text-sm font-medium text-[#f0eeff] truncate">
                   {user?.name ?? "User"}
@@ -132,7 +116,6 @@ const NavBar = ({ user }: NavBarProps) => {
                 <p className="text-xs text-[#7b7a9a] truncate">{user?.email}</p>
               </div>
 
-              {/* Menu items */}
               <div className="py-1.5">
                 <DropdownItem
                   icon={<User size={14} />}

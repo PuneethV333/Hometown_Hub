@@ -4,9 +4,6 @@ import { addPost, getPosts, likePost } from "../controllers/post.controller";
 
 export const postRouter = Router()
 
-
-// frontend calls: GET /api/posts?page=1&limit=10
-
 postRouter.get('/',authMiddleWare,getPosts)
 postRouter.post('/add',authMiddleWare,addPost)
 postRouter.post("/:id/like", authMiddleWare, likePost);

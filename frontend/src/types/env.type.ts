@@ -18,10 +18,9 @@ const firebaseSchema = z.object({
 
 export const envConfigSchema = z.object({
   firebase: firebaseSchema,
-
   backend_url: z.url(),
+  cloudName: z.string(),
+  uploadPreset: z.string(),
 });
 
-export type EnvConfigType = z.infer<
-  typeof envConfigSchema
->;
+export type EnvConfigType = z.infer<typeof envConfigSchema>;

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Heart, MessageCircle, Share2 } from "lucide-react";
 import { useLikePost } from "../../../Hooks/usePost";
-// import type { userType } from "../../../types/user.types";
+
 
 
 
@@ -15,7 +15,7 @@ const getTimeAgo = (dateStr: string) => {
 
 interface PostCardProps {
   post: any;
-  currentUserId?: string;   // just the _id string, not the whole user
+  currentUserId?: string;   
 }
 
 const PostCard = ({ post, currentUserId }: PostCardProps) => {
@@ -25,7 +25,7 @@ const PostCard = ({ post, currentUserId }: PostCardProps) => {
   
   
 
-  // likedBy contains ObjectId strings — compare correctly
+  
   const isLiked = currentUserId
     ? post.likedBy?.some(
         (id: any) => id?.toString() === currentUserId ||
@@ -38,7 +38,7 @@ const PostCard = ({ post, currentUserId }: PostCardProps) => {
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-[#1e1e2e] border border-[#2a2a38] flex items-center justify-center text-xs font-semibold text-[#7c6fff] overflow-hidden shrink-0">
-            {author?.photoUrl ? (               // fix — photoUrl not avatar
+            {author?.photoUrl ? (               
               <img
                 src={author.photoUrl}
                 alt={author.name}
@@ -99,30 +99,30 @@ const PostCard = ({ post, currentUserId }: PostCardProps) => {
   );
 };
 
-// const ActionButton = ({
-//   icon,
-//   count,
-//   label,
-//   hoverColor,
-//   style,
-//   onClick,
-// }: {
-//   icon: React.ReactNode;
-//   count?: number;
-//   label?: string;
-//   hoverColor: string;
-//   style?: React.CSSProperties;
-//   onClick?: () => void;
-// }) => (
-//   <button
-//     onClick={onClick}
-//     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-[#3a3a52] ${hoverColor} hover:bg-[#1e1e2e] transition-all`}
-//     style={style}
-//   >
-//     {icon}
-//     {count !== undefined && <span>{count}</span>}
-//     {label && <span>{label}</span>}
-//   </button>
-// );
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export default PostCard;
