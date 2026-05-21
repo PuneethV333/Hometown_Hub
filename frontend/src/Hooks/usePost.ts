@@ -3,11 +3,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getPostApi, likePostApi } from "../Api/post.api";
 import { Auth } from "../config/firebase.config";
 
-export const useGetPost = (page = 1, limit = 10) => {
+export const useGetPost = () => {
   return useQuery({
-    queryKey: ["post", page, limit],
-    queryFn: () => getPostApi(page, limit),
-    select: (res) => res.data,
+    queryKey: ["posts"],
+    queryFn: () => getPostApi(),
+    // no select — raw response stays in cache
     enabled: !!Auth.currentUser,
     retry: false,
   });
@@ -17,25 +17,37 @@ export const useLikePost = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (postId: string ) => likePostApi(postId),
+    mutationFn: (postId: string) => likePostApi(postId),
 
-    onMutate: async (postId ) => {
+    onMutate: async (postId) => {
       await queryClient.cancelQueries({ queryKey: ["posts"] });
 
       const previous = queryClient.getQueryData(["posts"]);
 
-      queryClient.setQueryData(["posts", 1, 10], (old: any) => ({
-        ...old,
-        data: old?.data?.map((post: any) =>
-          post._id === postId
-            ? {
+      queryClient.setQueryData(["posts"], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          data: {
+            ...old.data,
+            posts: old.data?.posts?.map((post: any) => {
+              if (post._id !== postId) return post;
+
+              const isLiked = post.likedBy?.some(
+                (id: any) => id?.toString() === postId,
+              );
+
+              return {
                 ...post,
-                likes: post.liked ? post.likes - 1 : post.likes + 1,
-                liked: !post.liked,
-              }
-            : post,
-        ),
-      }));
+                likes: isLiked ? post.likes - 1 : post.likes + 1,
+                likedBy: isLiked
+                  ? post.likedBy.filter((id: any) => id?.toString() !== postId)
+                  : [...(post.likedBy ?? []), postId],
+              };
+            }),
+          },
+        };
+      });
 
       return { previous };
     },

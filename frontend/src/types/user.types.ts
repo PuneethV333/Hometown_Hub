@@ -24,6 +24,8 @@ export const userSchema = z.object({
   isProfileComplete: z.boolean(),
 
   authProvider: z.enum(["google", "email"]),
+  
+  _id:z.string()
 });
 
 export type userType = z.infer<typeof userSchema>;

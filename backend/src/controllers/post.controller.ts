@@ -6,23 +6,13 @@ import { addPostReqBody } from "../types/user.types";
 export const getPosts = async (req: Request, res: Response) => {
   try {
     const firebaseUid = req.user?.firebaseUid;
+    if (!firebaseUid) return res.status(401).json({ message: "Unauthorized" });
 
-    if (!firebaseUid) {
-      return res.status(401).json({
-        message: "Unauthorized",
-      });
-    }
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 10;
+    const result = await getPostServices(firebaseUid);
 
-    const { posts, source } = await getPostServices(firebaseUid, {
-      page,
-      limit,
-    });
-
-    return res.status(200).json({ data: posts, source: source });
+    return res.status(200).json({ data: result, source: result.source });
   } catch (err: any) {
-    res.status(err.status || 500).json(getError(err));
+    return res.status(err.status || 500).json(getError(err));
   }
 };
 
