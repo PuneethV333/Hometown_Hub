@@ -8,8 +8,12 @@ export const getPostServices = async (firebaseUid: string) => {
   const cacheKey = `post:${firebaseUid}`;
 
   const cached = await getVal(cacheKey);
+
   if (cached) {
-    return { ...JSON.parse(cached), source: "redis" };
+    return {
+      ...JSON.parse(cached),
+      source: "redis",
+    };
   }
 
   const user = await User.findOne({ firebaseUid })
@@ -24,34 +28,57 @@ export const getPostServices = async (firebaseUid: string) => {
 
   let communityIds: mongoose.Types.ObjectId[];
 
+  // if user has no joined communities
   if (!user.myCommunities || user.myCommunities.length === 0) {
-    const communities = await Community.find({ "location.state": user.state })
+    const communities = await Community.find({
+      "location.state": user.state,
+    })
       .select("_id")
       .lean();
+
     communityIds = communities.map((c: any) => c._id);
   } else {
-    communityIds = user.myCommunities.map(
-      (c: any) => c.communityId?._id ?? c.communityId ?? c,
-    );
+    // myCommunities is ObjectId[]
+    communityIds = user.myCommunities;
   }
 
   if (communityIds.length === 0) {
-    return { posts: [], total: 0, source: "db" };
+    return {
+      posts: [],
+      total: 0,
+      source: "db",
+    };
   }
 
   const [posts, total] = await Promise.all([
-    Post.find({ communityId: { $in: communityIds } })
+    Post.find({
+      communityId: {
+        $in: communityIds,
+      },
+    })
       .sort({ createdAt: -1 })
       .populate("userId", "name photoUrl")
       .populate("communityId", "name type icon")
       .lean(),
-    Post.countDocuments({ communityId: { $in: communityIds } }),
+
+    Post.countDocuments({
+      communityId: {
+        $in: communityIds,
+      },
+    }),
   ]);
 
-  const result = { posts, total };
+  const result = {
+    posts,
+    total,
+  };
+
   await setValKey(cacheKey, JSON.stringify(result), 60);
 
-  return { ...result, source: "db" };
+  return {
+    ...result,
+    source: "db",
+  };
 };
 
 export const addPostServices = async (
@@ -68,13 +95,18 @@ export const addPostServices = async (
     throw err;
   }
 
+  // check membership
   const isFound = user.myCommunities.some(
-    (x: any) => x.communityId?.toString() === communityId,
+    (x: any) => x.toString() === communityId,
   );
 
   if (!isFound) {
-    const err: any = new Error("User can't post in this community");
+    const err: any = new Error(
+      "User can't post in this community",
+    );
+
     err.status = 403;
+
     throw err;
   }
 
@@ -85,13 +117,19 @@ export const addPostServices = async (
     image,
   });
 
+  // clear cached feed
   await clearCache(`post:${firebaseUid}`);
 
   return newPost;
 };
 
-export const likePostServices = async (postId: string, firebaseUid: string) => {
-  const user = await User.findOne({ firebaseUid }).select("_id").lean();
+export const likePostServices = async (
+  postId: string,
+  firebaseUid: string,
+) => {
+  const user = await User.findOne({ firebaseUid })
+    .select("_id")
+    .lean();
 
   if (!user) {
     const err: any = new Error("User not found");
@@ -99,7 +137,9 @@ export const likePostServices = async (postId: string, firebaseUid: string) => {
     throw err;
   }
 
-  const post = await Post.findById(postId).select("likedBy").lean();
+  const post = await Post.findById(postId)
+    .select("likedBy")
+    .lean();
 
   if (!post) {
     const err: any = new Error("Post not found");
@@ -108,24 +148,51 @@ export const likePostServices = async (postId: string, firebaseUid: string) => {
   }
 
   const alreadyLiked = post.likedBy.some(
-    (id: any) => id.toString() === user._id.toString(),
+    (id: any) =>
+      id.toString() === user._id.toString(),
   );
 
   const updated = await Post.findByIdAndUpdate(
     postId,
     alreadyLiked
-      ? { $inc: { likes: -1 }, $pull: { likedBy: user._id } }
-      : { $inc: { likes: 1 }, $push: { likedBy: user._id } },
-    { returnDocument: "after" },
+      ? {
+          $inc: {
+            likes: -1,
+          },
+
+          $pull: {
+            likedBy: user._id,
+          },
+        }
+      : {
+          $inc: {
+            likes: 1,
+          },
+
+          $addToSet: {
+            likedBy: user._id,
+          },
+        },
+
+    {
+      returnDocument: "after",
+    },
   ).lean();
 
   if (!updated) {
-    const err: any = new Error("Failed to update post");
+    const err: any = new Error(
+      "Failed to update post",
+    );
+
     err.status = 500;
+
     throw err;
   }
 
   await clearCache(`post:${firebaseUid}`);
 
-  return { post: updated, liked: !alreadyLiked };
+  return {
+    post: updated,
+    liked: !alreadyLiked,
+  };
 };

@@ -6,7 +6,7 @@ const userSchema = new Schema<userSchemaType>(
     name: {
       type: String,
       trim: true,
-      default:"guest"
+      default: "guest",
     },
     firebaseUid: {
       type: String,
@@ -82,11 +82,9 @@ const userSchema = new Schema<userSchemaType>(
     },
     myCommunities: [
       {
-        communityId: {
-          type: Schema.Types.ObjectId,
-          ref: "Community",
-          required: true,
-        },
+        type: Schema.Types.ObjectId,
+        ref: "Community",
+        required: true,
       },
     ],
   },

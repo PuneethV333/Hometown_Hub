@@ -19,7 +19,7 @@ export const getCurrentUser = async (
   
   const user = await User.findOne({
     firebaseUid,
-  }).populate("myCommunities.communityId").lean()
+  }).lean()
 
   if (!user) {
     return null;

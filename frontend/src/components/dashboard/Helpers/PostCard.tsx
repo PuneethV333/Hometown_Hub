@@ -2,9 +2,6 @@
 import { Heart, MessageCircle, Share2 } from "lucide-react";
 import { useLikePost } from "../../../Hooks/usePost";
 
-
-
-
 const getTimeAgo = (dateStr: string) => {
   const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
   if (diff < 60) return `${diff}s ago`;
@@ -15,21 +12,19 @@ const getTimeAgo = (dateStr: string) => {
 
 interface PostCardProps {
   post: any;
-  currentUserId?: string;   
+  currentUserId?: string;
 }
 
 const PostCard = ({ post, currentUserId }: PostCardProps) => {
-  const author    = post.userId;
+  const author = post.userId;
   const community = post.communityId;
   const { mutate: likePost } = useLikePost();
-  
-  
 
-  
   const isLiked = currentUserId
     ? post.likedBy?.some(
-        (id: any) => id?.toString() === currentUserId ||
-                     id?._id?.toString() === currentUserId
+        (id: any) =>
+          id?.toString() === currentUserId ||
+          id?._id?.toString() === currentUserId,
       )
     : false;
 
@@ -38,21 +33,23 @@ const PostCard = ({ post, currentUserId }: PostCardProps) => {
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-[#1e1e2e] border border-[#2a2a38] flex items-center justify-center text-xs font-semibold text-[#7c6fff] overflow-hidden shrink-0">
-            {author?.photoUrl ? (               
+            {author?.photoUrl ? (
               <img
                 src={author.photoUrl}
                 alt={author.name}
                 className="w-full h-full object-cover"
               />
             ) : (
-              author?.name?.[0]?.toUpperCase() ?? "U"
+              (author?.name?.[0]?.toUpperCase() ?? "U")
             )}
           </div>
           <div>
             <p className="text-sm font-semibold text-[#e0e0f0]">
               {author?.name ?? "Unknown"}
             </p>
-            <p className="text-xs text-[#3a3a52]">{getTimeAgo(post.createdAt)}</p>
+            <p className="text-xs text-[#3a3a52]">
+              {getTimeAgo(post.createdAt)}
+            </p>
           </div>
         </div>
 
@@ -63,11 +60,17 @@ const PostCard = ({ post, currentUserId }: PostCardProps) => {
         )}
       </div>
 
-      <p className="text-sm text-[#a0a0c0] leading-relaxed mb-4">{post.content}</p>
+      <p className="text-sm text-[#a0a0c0] leading-relaxed mb-4">
+        {post.content}
+      </p>
 
       {post.image && (
         <div className="rounded-xl overflow-hidden mb-4 border border-[#2a2a38]">
-          <img src={post.image} alt="post" className="w-full object-cover max-h-72" />
+          <img
+            src={post.image}
+            alt="post"
+            className="w-full object-cover max-h-72"
+          />
         </div>
       )}
 
@@ -98,31 +101,5 @@ const PostCard = ({ post, currentUserId }: PostCardProps) => {
     </div>
   );
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export default PostCard;

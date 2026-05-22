@@ -14,7 +14,7 @@ export const useAuth = () => {
     retry: false,
 
     onError: (err) => {
-        toast.error(err.message)
+      toast.error(err.message);
     },
 
     onSuccess: (res) => {

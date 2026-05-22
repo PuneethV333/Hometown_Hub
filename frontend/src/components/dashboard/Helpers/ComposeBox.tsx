@@ -148,8 +148,8 @@ const ComposeBox = ({ user }: SideBarProps) => {
                     </option>
                     {user?.myCommunities?.map((c: any) => {
                       return (
-                        <option key={c?.communityId?._id} value={c?.communityId?._id}>
-                          {c?.communityId?.name}
+                        <option key={c?._id} value={c?._id}>
+                          {c?.name}
                         </option>
                       );
                     })}
