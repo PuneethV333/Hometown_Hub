@@ -14,7 +14,5 @@ export const useGetMe = () => {
     gcTime: 30 * 60 * 1000,
     refetchOnWindowFocus: false,
     enabled: !!Auth.currentUser,
-
-
   });
 };  

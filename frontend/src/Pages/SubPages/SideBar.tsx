@@ -33,13 +33,17 @@ const navItems = [
   { name: "Profile", path: "/home/profile", icon: User },
 ];
 
-const getAccent = (name: string) => {
+const getAccent = (name?: string) => {
   const accents = [
     "from-violet-600 to-violet-800",
     "from-indigo-500 to-violet-700",
     "from-purple-600 to-indigo-700",
     "from-violet-700 to-purple-900",
   ];
+
+  if (!name || name.length === 0) {
+    return accents[0];
+  }
 
   return accents[name.charCodeAt(0) % accents.length];
 };
@@ -50,8 +54,7 @@ const SideBar = ({ user }: SideBarProps) => {
 
   const [expandCommunities, setExpandCommunities] = useState(true);
 
-  const isActive = (path: string) =>
-    location.pathname === path;
+  const isActive = (path: string) => location.pathname === path;
 
   // populated communities directly
   const communities = user?.myCommunities ?? [];
@@ -62,20 +65,8 @@ const SideBar = ({ user }: SideBarProps) => {
       <div className="p-6 border-b border-[#2a2a38]">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-[#1a1230] border border-[#2a2a38] flex items-center justify-center shrink-0">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 22 22"
-              fill="none"
-            >
-              <rect
-                x="1"
-                y="1"
-                width="9"
-                height="9"
-                rx="2"
-                fill="#a78bfa"
-              />
+            <svg width="16" height="16" viewBox="0 0 22 22" fill="none">
+              <rect x="1" y="1" width="9" height="9" rx="2" fill="#a78bfa" />
 
               <rect
                 x="12"
@@ -97,20 +88,11 @@ const SideBar = ({ user }: SideBarProps) => {
                 opacity="0.6"
               />
 
-              <rect
-                x="12"
-                y="12"
-                width="9"
-                height="9"
-                rx="2"
-                fill="#a78bfa"
-              />
+              <rect x="12" y="12" width="9" height="9" rx="2" fill="#a78bfa" />
             </svg>
           </div>
 
-          <span className="text-sm font-bold text-[#f0eeff]">
-            Hometown Hub
-          </span>
+          <span className="text-sm font-bold text-[#f0eeff]">Hometown Hub</span>
         </div>
       </div>
 
@@ -129,9 +111,7 @@ const SideBar = ({ user }: SideBarProps) => {
             >
               <Icon size={17} />
 
-              <span className="text-sm font-medium">
-                {name}
-              </span>
+              <span className="text-sm font-medium">{name}</span>
             </button>
           ))}
         </div>
@@ -139,9 +119,7 @@ const SideBar = ({ user }: SideBarProps) => {
         {/* Communities */}
         <div className="border-t border-[#2a2a38] pt-4">
           <button
-            onClick={() =>
-              setExpandCommunities((v) => !v)
-            }
+            onClick={() => setExpandCommunities((v) => !v)}
             className="w-full flex items-center justify-between px-4 py-2 text-[#7b7a9a] hover:text-[#f0eeff] transition-colors mb-2"
           >
             <span className="text-[11px] font-semibold uppercase tracking-wider">
@@ -151,9 +129,7 @@ const SideBar = ({ user }: SideBarProps) => {
             <ChevronDown
               size={14}
               className={`transition-transform duration-200 ${
-                expandCommunities
-                  ? "rotate-0"
-                  : "-rotate-90"
+                expandCommunities ? "rotate-0" : "-rotate-90"
               }`}
             />
           </button>
@@ -165,9 +141,7 @@ const SideBar = ({ user }: SideBarProps) => {
                   <button
                     key={community._id}
                     onClick={() =>
-                      navigate(
-                        `/home/communities/${community._id}`
-                      )
+                      navigate(`/home/communities/${community._id}`)
                     }
                     className="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-[#7b7a9a] hover:text-[#f0eeff] hover:bg-[#1a1a24] transition-all group"
                   >
@@ -182,12 +156,10 @@ const SideBar = ({ user }: SideBarProps) => {
                       ) : (
                         <div
                           className={`w-full h-full bg-linear-to-br ${getAccent(
-                            community.name
+                            community.name,
                           )} flex items-center justify-center text-[10px] font-bold text-white`}
                         >
-                          {community.name
-                            .charAt(0)
-                            .toUpperCase()}
+                          {community.name.charAt(0).toUpperCase()}
                         </div>
                       )}
                     </div>
@@ -200,8 +172,7 @@ const SideBar = ({ user }: SideBarProps) => {
 
                       {community.memberCount ? (
                         <p className="text-[10px] text-[#4a4a62]">
-                          {community.memberCount.toLocaleString()}{" "}
-                          members
+                          {community.memberCount.toLocaleString()} members
                         </p>
                       ) : null}
                     </div>
@@ -219,9 +190,7 @@ const SideBar = ({ user }: SideBarProps) => {
                   </p>
 
                   <button
-                    onClick={() =>
-                      navigate("/home/communities")
-                    }
+                    onClick={() => navigate("/home/communities")}
                     className="text-xs text-violet-400 hover:text-violet-300 font-medium transition-colors"
                   >
                     Browse Communities →
@@ -231,9 +200,7 @@ const SideBar = ({ user }: SideBarProps) => {
 
               {/* Join button */}
               <button
-                onClick={() =>
-                  navigate("/home/communities")
-                }
+                onClick={() => navigate("/home/communities")}
                 className="w-full mt-3 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#2d1f5e] border border-violet-600/30 text-[#c4b5fd] hover:bg-[#3a2970] transition-all text-sm font-medium"
               >
                 <Plus size={15} />
@@ -248,14 +215,11 @@ const SideBar = ({ user }: SideBarProps) => {
       <div className="p-4 border-t border-[#2a2a38]">
         <div className="bg-[#1a1a24] rounded-xl p-3 border border-[#2a2a38]">
           <p className="text-xs text-[#7b7a9a] mb-2.5 leading-relaxed">
-            Discover communities and connect with your
-            hometown.
+            Discover communities and connect with your hometown.
           </p>
 
           <button
-            onClick={() =>
-              navigate("/home/communities")
-            }
+            onClick={() => navigate("/home/communities")}
             className="w-full flex items-center justify-center gap-1.5 text-xs bg-linear-to-r from-violet-600 to-violet-800 text-white py-2 rounded-lg hover:opacity-90 transition-all font-medium"
           >
             <Compass size={13} />

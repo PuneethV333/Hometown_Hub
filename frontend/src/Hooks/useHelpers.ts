@@ -16,9 +16,8 @@ export const useFetchCities = () => {
 }
 
 export const useFetchTowns = () => {
-    return useMutation({
-        mutationFn:fetchTownsApi,
-        mutationKey:["city"],
-    })
-}
-
+  return useMutation({
+    mutationFn: (text: string) => fetchTownsApi(text),
+    mutationKey: ["towns"],
+  });
+};

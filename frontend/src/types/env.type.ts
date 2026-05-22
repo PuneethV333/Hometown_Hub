@@ -21,6 +21,7 @@ export const envConfigSchema = z.object({
   backend_url: z.url(),
   cloudName: z.string(),
   uploadPreset: z.string(),
+  geoapifyAPIKey:z.string()
 });
 
 export type EnvConfigType = z.infer<typeof envConfigSchema>;

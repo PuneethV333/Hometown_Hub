@@ -19,7 +19,7 @@ export const getCurrentUser = async (
   
   const user = await User.findOne({
     firebaseUid,
-  }).lean()
+  }).populate("myCommunities").lean()
 
   if (!user) {
     return null;
@@ -57,7 +57,7 @@ export const onBoardingHelper = async (
         town: payload.town,
         isProfileComplete: true,
       },
-      { new: true, runValidators: true },
+      { returnDocument:"after"},
     ).lean();
 
     await setValKey(cacheKey, JSON.stringify(user), 3600);

@@ -1,35 +1,38 @@
-import axios from "axios"
+import axios from "axios";
+import { config } from "../config/data.config";
 
 export const fetchStatesApi = async () => {
-    const res = await axios.post(
+  const res = await axios.post(
     "https://countriesnow.space/api/v0.1/countries/states",
     {
       country: "India",
-    }
+    },
   );
-  return res.data
-}
+  return res.data;
+};
 
-export const fetchCitiesApi = async (state:string) => {
-    const res = await axios.post(
+export const fetchCitiesApi = async (state: string) => {
+    console.log(config.geoapifyAPIKey);
+    
+  const res = await axios.post(
     "https://countriesnow.space/api/v0.1/countries/state/cities",
     {
       country: "India",
       state,
-    }
-  );  
-  return res.data
-}
-
-export const fetchTownsApi = async (query: string) => {
+    },
+  );
+  return res.data;
+};
+export const fetchTownsApi = async (text: string) => {
   const res = await axios.get(
-    `https://api.geoapify.com/v1/geocode/autocomplete`,
+    "https://api.geoapify.com/v1/geocode/autocomplete",
     {
       params: {
-        text: query,
-        type: "city",
+        text,
+        type: "suburb",
         filter: "countrycode:in",
-        apiKey: import.meta.env.VITE_GEOAPIFY_KEY,
+        limit: 10,
+        apiKey: config.geoapifyAPIKey
       },
     }
   );

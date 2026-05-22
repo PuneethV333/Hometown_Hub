@@ -5,11 +5,14 @@ import { useNavigate } from "react-router-dom"
 
 
 export const useOnBoarding = () => {
+    
     const navigate = useNavigate()
     return useMutation({
         mutationFn:onBoardingApi,
         mutationKey:["me"],
+        
         onSuccess:() => {
+            
             toast.success("on-boarding completed")
             navigate("/home")
         },

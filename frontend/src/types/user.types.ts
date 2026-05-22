@@ -51,7 +51,7 @@ export const onBoardingSchema = z.object({
   gender: z.enum(["Male", "Female", ""]),
   city: z.string(),
   state: z.string(),
-  town: z.string(),
+  town: z.string().optional(),
   dob: z.coerce.date(),
 });
 
