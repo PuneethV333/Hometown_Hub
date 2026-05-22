@@ -21,14 +21,18 @@ export const fetchCitiesApi = async (state:string) => {
   return res.data
 }
 
-export const fetchTownsApi = async ({state,town}:{state:string,town:string}) => {
-    const res = await axios.post(
-    "https://countriesnow.space/api/v0.1/countries/state/cities/town",
+export const fetchTownsApi = async (query: string) => {
+  const res = await axios.get(
+    `https://api.geoapify.com/v1/geocode/autocomplete`,
     {
-      country: "India",
-      state,
-      town
+      params: {
+        text: query,
+        type: "city",
+        filter: "countrycode:in",
+        apiKey: import.meta.env.VITE_GEOAPIFY_KEY,
+      },
     }
-  );  
-  return res.data
-}
+  );
+
+  return res.data;
+};

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import Spinner from "../components/Spinner";
 import { Auth } from "../config/firebase.config";
@@ -10,7 +11,11 @@ import {
 } from "../types/user.types";
 import { useOnBoarding } from "../Hooks/useOnboarding";
 import toast from "react-hot-toast";
-import { useFetchCities, useFetchState, useFetchTowns } from "../Hooks/useHelpers";
+import {
+  useFetchCities,
+  useFetchState,
+  useFetchTowns,
+} from "../Hooks/useHelpers";
 
 const GENDERS = ["Male", "Female"];
 
@@ -57,10 +62,9 @@ const Onboarding = () => {
     }
   }, [onBoardingReqBody.state]);
 
-  
   useEffect(() => {
-    if (onBoardingReqBody.state && onBoardingReqBody.city) {
-      getTowns({ state: onBoardingReqBody.state, town: onBoardingReqBody.city });
+    if (onBoardingReqBody.city) {
+      getTowns(onBoardingReqBody.city);
     }
   }, [onBoardingReqBody.city]);
 
@@ -86,8 +90,8 @@ const Onboarding = () => {
     setOnBoardingReqBody((prev) => ({
       ...prev,
       state,
-      city: "",   
-      town: "",   
+      city: "",
+      town: "",
     }));
   };
 
@@ -95,7 +99,7 @@ const Onboarding = () => {
     setOnBoardingReqBody((prev) => ({
       ...prev,
       city,
-      town: "",   
+      town: "",
     }));
   };
 
@@ -133,7 +137,7 @@ const Onboarding = () => {
     ? statesData?.data?.states
     : [];
   const cities = Array.isArray(citiesData?.data) ? citiesData?.data : [];
-  const towns = Array.isArray(townData?.data) ? townData?.data : [];
+  const towns = Array.isArray(townData?.features) ? townData.features : [];
 
   const SELECT_STYLE = {
     backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237b7a9a' d='M6 9L1 4h10z'/%3E%3C/svg%3E")`,
@@ -145,7 +149,8 @@ const Onboarding = () => {
   const INPUT_CLASS =
     "w-full bg-[#0d0d12] border border-[#2a2a38] rounded-[10px] px-3.5 py-2.5 text-sm text-[#f0eeff] placeholder:text-[#4a4a62] outline-none focus:border-violet-600 transition-colors";
   const SELECT_CLASS =
-    INPUT_CLASS + " cursor-pointer appearance-none disabled:opacity-50 disabled:cursor-not-allowed";
+    INPUT_CLASS +
+    " cursor-pointer appearance-none disabled:opacity-50 disabled:cursor-not-allowed";
   const LABEL_CLASS = "text-xs font-medium text-[#7b7a9a]";
 
   return (
@@ -165,8 +170,24 @@ const Onboarding = () => {
           <div className="w-9 h-9 rounded-[10px] bg-[#1a1230] border border-[#2a2a38] flex items-center justify-center shrink-0">
             <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
               <rect x="1" y="1" width="9" height="9" rx="2" fill="#a78bfa" />
-              <rect x="12" y="1" width="9" height="9" rx="2" fill="#7c3aed" opacity="0.6" />
-              <rect x="1" y="12" width="9" height="9" rx="2" fill="#7c3aed" opacity="0.6" />
+              <rect
+                x="12"
+                y="1"
+                width="9"
+                height="9"
+                rx="2"
+                fill="#7c3aed"
+                opacity="0.6"
+              />
+              <rect
+                x="1"
+                y="12"
+                width="9"
+                height="9"
+                rx="2"
+                fill="#7c3aed"
+                opacity="0.6"
+              />
               <rect x="12" y="12" width="9" height="9" rx="2" fill="#a78bfa" />
             </svg>
           </div>
@@ -197,7 +218,9 @@ const Onboarding = () => {
                 disabled
                 className="w-full bg-[#0d0d12] border border-[#2a2a38] rounded-[10px] px-3.5 py-2.5 text-sm text-[#7b7a9a] placeholder:text-[#4a4a62] outline-none cursor-not-allowed opacity-60"
               />
-              <p className="text-[10px] text-[#4a4a62]">Pre-filled from account</p>
+              <p className="text-[10px] text-[#4a4a62]">
+                Pre-filled from account
+              </p>
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -220,7 +243,9 @@ const Onboarding = () => {
                 type="tel"
                 placeholder="+91 98765 43210"
                 value={onBoardingReqBody.phoneNumber}
-                onChange={(e) => handleInputChange("phoneNumber", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("phoneNumber", e.target.value)
+                }
                 className={INPUT_CLASS}
               />
             </div>
@@ -233,9 +258,13 @@ const Onboarding = () => {
                 className={SELECT_CLASS}
                 style={SELECT_STYLE}
               >
-                <option value="" disabled>Select Gender</option>
+                <option value="" disabled>
+                  Select Gender
+                </option>
                 {GENDERS.map((gender) => (
-                  <option key={gender} value={gender}>{gender}</option>
+                  <option key={gender} value={gender}>
+                    {gender}
+                  </option>
                 ))}
               </select>
             </div>
@@ -268,7 +297,11 @@ const Onboarding = () => {
               <select
                 value={onBoardingReqBody.city}
                 onChange={(e) => handleCityChange(e.target.value)}
-                disabled={!onBoardingReqBody.state || loadingCities || cities.length === 0}
+                disabled={
+                  !onBoardingReqBody.state ||
+                  loadingCities ||
+                  cities.length === 0
+                }
                 className={SELECT_CLASS}
                 style={SELECT_STYLE}
               >
@@ -280,7 +313,9 @@ const Onboarding = () => {
                       : "Select City"}
                 </option>
                 {cities.map((city: string) => (
-                  <option key={city} value={city}>{city}</option>
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
                 ))}
               </select>
             </div>
@@ -292,7 +327,9 @@ const Onboarding = () => {
             <select
               value={onBoardingReqBody.town}
               onChange={(e) => handleInputChange("town", e.target.value)}
-              disabled={!onBoardingReqBody.city || loadingTown || towns.length === 0}
+              disabled={
+                !onBoardingReqBody.city || loadingTown || towns.length === 0
+              }
               className={SELECT_CLASS}
               style={SELECT_STYLE}
             >
@@ -305,8 +342,13 @@ const Onboarding = () => {
                       ? "No towns available"
                       : "Select Town"}
               </option>
-              {towns.map((town: string) => (
-                <option key={town} value={town}>{town}</option>
+              {towns.map((town: any) => (
+                <option
+                  key={town.properties.place_id}
+                  value={town.properties.city || town.properties.name}
+                >
+                  {town.properties.city || town.properties.name}
+                </option>
               ))}
             </select>
           </div>
@@ -322,7 +364,9 @@ const Onboarding = () => {
                   : ""
               }
               onChange={(e) => {
-                const dateValue = e.target.value ? new Date(e.target.value) : new Date();
+                const dateValue = e.target.value
+                  ? new Date(e.target.value)
+                  : new Date();
                 handleInputChange("dob", dateValue);
               }}
               className={INPUT_CLASS + " cursor-pointer"}
@@ -344,7 +388,8 @@ const Onboarding = () => {
         </div>
 
         <p className="text-center text-xs text-[#7b7a9a] mt-6">
-          Your profile helps us create personalized community connections for you.
+          Your profile helps us create personalized community connections for
+          you.
         </p>
       </div>
     </div>

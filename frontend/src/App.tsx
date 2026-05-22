@@ -18,9 +18,9 @@ const App = () => {
 
   const { data, isPending } = useGetMe();
 
-  if (authLoading || isPending) {
-    return <Spinner />;
-  }
+  if (authLoading || (user && isPending)) {
+  return <Spinner />;
+}
 
   return (
     <>
