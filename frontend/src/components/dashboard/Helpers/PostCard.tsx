@@ -80,7 +80,7 @@ const PostCard = ({ post, currentUserId }: PostCardProps) => {
       )}
 
       <div className="flex items-center gap-1 pt-3 border-t border-[#2a2a38]">
-        {/* Like button — uses isLiked for styling */}
+        
         <button
           onClick={() => likePost(post._id)}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all hover:bg-[#1e1e2e] ${

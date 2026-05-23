@@ -20,3 +20,8 @@ export const getCommunityPostApi = async (communityId:string) => {
     const res = await api.get(`/api/posts/community/${communityId}`)
     return res.data;
 }
+
+export const getUserPostApi = async () => {
+    const res = await api.get('/api/posts/user');
+    return res.data
+}

@@ -11,6 +11,8 @@ const Feed = () => {
   const { data: me } = useGetMe();
 
   const posts = data?.data?.posts ?? [];
+  console.log(posts);
+  
 
   if (isPending) return <FeedSkeleton />;
   if (isError)

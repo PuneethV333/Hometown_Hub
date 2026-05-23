@@ -57,6 +57,8 @@ export const getPostServices = async (firebaseUid: string) => {
       .sort({ createdAt: -1 })
       .populate("userId", "name photoUrl")
       .populate("communityId", "name type icon")
+      .populate("comments", "content by")
+      .populate("likedBy", "name")
       .lean(),
 
     Post.countDocuments({
@@ -113,6 +115,7 @@ export const addPostServices = async (
   });
 
   await clearCache(`post:${firebaseUid}`);
+  await clearCache(`posts:user:${firebaseUid}`);
 
   return newPost;
 };
@@ -216,4 +219,27 @@ export const getCommunityPostsServices = async (
   } catch (err) {
     throw err;
   }
+};
+
+export const getUsersPostServices = async (firebaseUid: string) => {
+  const cacheKey = `posts:user:${firebaseUid}`;
+  const cached = await getVal(cacheKey);
+
+  if (cached) {
+    return { data: JSON.parse(cached), source: "redis" };
+  }
+
+  const user = await User.findOne({ firebaseUid: firebaseUid });
+
+  if (!user) {
+    throw new Error("unauthorized");
+  }
+
+  const posts = await Post.find({ userId: user._id })
+    .populate("communityId", "name icon")
+    .lean();
+
+  await setValKey(cacheKey, JSON.stringify(posts));
+
+  return { data: posts, source: "db" };
 };

@@ -4,6 +4,7 @@ import {
   addPostServices,
   getCommunityPostsServices,
   getPostServices,
+  getUsersPostServices,
   likePostServices,
 } from "../services/post.services";
 import { addPostReqBody } from "../types/user.types";
@@ -101,11 +102,32 @@ export const getCommunityPosts = async (req: Request, res: Response) => {
       firebaseUid,
       Array.isArray(communityId) ? communityId[0] : communityId,
     );
-    
+
     return res.status(200).json({
-        posts:result.posts,
-        source:result.source
-    })
+      posts: result.posts,
+      source: result.source,
+    });
+  } catch (err) {
+    res.status(500).json(getError(err));
+  }
+};
+
+export const getUsersPost = async (req: Request, res: Response) => {
+  try {
+    const firebaseUid = req.user?.firebaseUid;
+
+    if (!firebaseUid) {
+      return res.status(401).json({
+        message: "unauthorized",
+      });
+    }
+
+    const result = await getUsersPostServices(firebaseUid);
+
+    return res.status(200).json({
+      data: result.data,
+      source: result.source,
+    });
   } catch (err) {
     res.status(500).json(getError(err));
   }

@@ -64,3 +64,4 @@ export const onBoarding = async (req: Request, res: Response) => {
     res.status(500).json(getError(err));
   }
 };
+

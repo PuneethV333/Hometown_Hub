@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import {z} from "zod"
+import { z } from "zod";
 
 export interface IEvent {
   title: string;
@@ -16,16 +16,13 @@ export interface IEvent {
   updatedAt?: Date;
 }
 
-
 export const addEventsReqBodySchema = z.object({
   title: z.string(),
   description: z.string().optional(),
-  startDate: z.coerce.date(),          
+  startDate: z.coerce.date(),
   endDate: z.coerce.date().optional(),
   location: z.string(),
   community: z.string(),
-})
+});
 
-
-
-export type addEventsReqBodyType = z.infer<typeof addEventsReqBodySchema>
+export type addEventsReqBodyType = z.infer<typeof addEventsReqBodySchema>;

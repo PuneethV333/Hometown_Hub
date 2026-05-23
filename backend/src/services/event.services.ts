@@ -61,7 +61,6 @@ export const addEventsServices = async (
     throw err;
   }
 
-  // fix — ObjectId comparison
   if (community.createdBy.toString() !== user._id.toString()) {
     const err: any = new Error("Only community creator can create events");
     err.status = 403;

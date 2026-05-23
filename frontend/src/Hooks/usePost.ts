@@ -4,6 +4,7 @@ import {
   addPostApi,
   getCommunityPostApi,
   getPostApi,
+  getUserPostApi,
   likePostApi,
 } from "../Api/post.api";
 import { Auth } from "../config/firebase.config";
@@ -75,6 +76,7 @@ export const useAddPost = () => {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["user", "post"] });
     },
 
     onError: (err) => {
@@ -88,6 +90,15 @@ export const useGetCommunityPosts = (communityId: string) => {
     queryKey: ["post", "community", communityId],
     queryFn: () => getCommunityPostApi(communityId),
     enabled: !!Auth.currentUser && !!communityId,
+    retry: false,
+  });
+};
+
+export const useGetUserPost = () => {
+  return useQuery({
+    queryKey: ["user", "post"],
+    queryFn: getUserPostApi,
+    enabled: !!Auth.currentUser,
     retry: false,
   });
 };

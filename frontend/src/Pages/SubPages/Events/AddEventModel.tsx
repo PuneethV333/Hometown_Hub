@@ -53,7 +53,6 @@ const AddEventModal = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
       <div className="w-full max-w-lg rounded-3xl border border-[#2a2a38] bg-[#13131a] shadow-2xl">
-        {/* Header */}
         <div className="flex items-center justify-between p-5 border-b border-[#2a2a38]">
           <div className="flex items-center gap-2">
             <CalendarDays size={20} className="text-violet-400" />
@@ -69,12 +68,10 @@ const AddEventModal = ({
           </button>
         </div>
 
-        {/* Form */}
         <form
           onSubmit={handleSubmit}
           className="p-5 space-y-4 max-h-[75vh] overflow-y-auto"
         >
-          {/* Community */}
           <div>
             <label className="text-sm text-[#b0aecb] mb-1 block">
               Community
@@ -100,7 +97,6 @@ const AddEventModal = ({
             </div>
           </div>
 
-          {/* Title */}
           <div>
             <label className="text-sm text-[#b0aecb] mb-1 block">
               Event Title
@@ -119,7 +115,6 @@ const AddEventModal = ({
             </div>
           </div>
 
-          {/* Description */}
           <div>
             <label className="text-sm text-[#b0aecb] mb-1 block">
               Description
@@ -134,7 +129,6 @@ const AddEventModal = ({
             />
           </div>
 
-          {/* Dates */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-sm text-[#b0aecb] mb-1 block">
@@ -163,7 +157,6 @@ const AddEventModal = ({
             </div>
           </div>
 
-          {/* Location */}
           <div>
             <label className="text-sm text-[#b0aecb] mb-1 block">
               Location
@@ -182,7 +175,6 @@ const AddEventModal = ({
             </div>
           </div>
 
-          {/* Actions */}
           <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
