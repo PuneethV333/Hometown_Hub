@@ -20,7 +20,7 @@ const PostCard = ({ post, currentUserId }: PostCardProps) => {
   const author = post.userId;
   const community = post.communityId;
   const { mutate: likePost } = useLikePost();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const isLiked = currentUserId
     ? post.likedBy?.some(
@@ -56,7 +56,10 @@ const PostCard = ({ post, currentUserId }: PostCardProps) => {
         </div>
 
         {community && (
-          <span className="text-[11px] px-2.5 py-1 rounded-full bg-[#1e1e2e] border border-[#2a2a38] text-[#7c6fff] font-medium hover:cursor-pointer" onClick={() => navigate(`/home/community/${community._id}`)}>
+          <span
+            className="text-[11px] px-2.5 py-1 rounded-full bg-[#1e1e2e] border border-[#2a2a38] text-[#7c6fff] font-medium hover:cursor-pointer"
+            onClick={() => navigate(`/home/community/${community._id}`)}
+          >
             {community.name}
           </span>
         )}

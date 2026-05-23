@@ -28,7 +28,7 @@ export const getEventsServices = async (firebaseUid: string) => {
       .sort({ startDate: 1 })
       .limit(5)
       .populate("community", "name icon")
-      .populate("createdBy", "name avatar")
+      .populate("createdBy", "name photoUrl")
       .lean();
 
     await setValKey(cacheKey, JSON.stringify(events));

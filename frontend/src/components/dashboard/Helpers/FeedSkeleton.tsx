@@ -22,7 +22,6 @@ const PostSkeleton = () => (
 
 const FeedSkeleton = () => (
   <div className="flex flex-col gap-4">
-    {/* Compose skeleton */}
     <div className="bg-[#13131a] border border-[#2a2a38] rounded-2xl p-4">
       <div className="flex items-center gap-3">
         <div className="w-9 h-9 rounded-full bg-[#1e1e2e] animate-pulse shrink-0" />

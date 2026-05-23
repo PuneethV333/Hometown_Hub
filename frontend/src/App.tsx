@@ -8,6 +8,7 @@ import { Auth } from "./config/firebase.config";
 import { useGetMe } from "./Hooks/useGetMe";
 import Spinner from "./components/Spinner";
 import CommunityPage from "./Pages/SubPages/CommunityPage/CommunityPage";
+import EventsPage from "./Pages/SubPages/Events/EventsPage";
 
 const Login = lazy(() => import("./Pages/Login"));
 const Onboarding = lazy(() => import("./Pages/Onboarding"));
@@ -76,6 +77,10 @@ const App = () => {
             <Route
               path="community/:id"
               element={<CommunityPage />}
+            />
+            <Route
+              path="events"
+              element={<EventsPage />}
             />
           </Route>
 

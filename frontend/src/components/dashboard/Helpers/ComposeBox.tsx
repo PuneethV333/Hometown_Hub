@@ -15,9 +15,6 @@ const ComposeBox = ({ user }: SideBarProps) => {
   const [preview, setPreview] = useState<string>("");
   const [uploading, setUploading] = useState(false);
   const { mutate: addPost, isPending } = useAddPost();
-  
-  
-  
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
