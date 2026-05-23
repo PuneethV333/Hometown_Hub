@@ -1,11 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { CalendarDays } from "lucide-react";
+import { useState } from "react";
+import { CalendarDays, Plus } from "lucide-react";
+import toast from "react-hot-toast";
 import SidebarSkeleton from "../../../components/dashboard/Helpers/SidebarSkeleton";
+import { useGetEvents, useAddEvents } from "../../../Hooks/useEvent";
+import { useGetMe } from "../../../Hooks/useGetMe";
 import { EventCard } from "../../../components/EventHelper/EventCard";
-import { useGetEvents } from "../../../Hooks/useEvent";
+import type { addEventsReqBodyType } from "../../../types/events.types";
+import AddEventModal from "./AddEventModel";
 
 const EventsPage = () => {
   const { data, isPending, isError } = useGetEvents();
+  const { data: me } = useGetMe();
+  const { mutate, isPending: isCreating } = useAddEvents();
+  const [openModal, setOpenModal] = useState(false);
 
   const events = data ?? [];
 
@@ -26,36 +34,64 @@ const EventsPage = () => {
     );
 
   return (
-    <div className="min-h-full bg-[#0d0d12] p-6">
-      <div className="max-w-3xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2">
-            <CalendarDays size={20} className="text-[#7c6fff]" />
-            <h1 className="text-lg font-bold text-[#e0e0f0]">
-              Upcoming Events
-            </h1>
-          </div>
-        </div>
+    <>
+      <div className="min-h-full bg-[#0d0d12] p-6">
+        <div className="max-w-3xl mx-auto">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <CalendarDays size={20} className="text-[#7c6fff]" />
+              <h1 className="text-lg font-bold text-[#e0e0f0]">
+                Upcoming Events
+              </h1>
+            </div>
 
-        {events.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-24 gap-3 rounded-2xl border border-[#2a2a38] bg-[#13131a]">
-            <CalendarDays size={36} className="text-[#3a3a52]" />
-            <p className="text-sm font-medium text-[#6a6a8a]">
-              No upcoming events
-            </p>
-            <p className="text-xs text-[#3a3a52]">
-              Events from your communities will appear here
-            </p>
+            {me?.role !== "User" && (
+              <button
+                onClick={() => setOpenModal(true)}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#2d1f5e] border border-violet-600/30 text-[#c4b5fd] hover:bg-[#3a2970] transition-all text-sm font-medium"
+              >
+                <Plus size={15} />
+                Create Event
+              </button>
+            )}
           </div>
-        ) : (
-          <div className="flex flex-col gap-4">
-            {events.map((event: any) => (
-              <EventCard key={event._id} event={event} />
-            ))}
-          </div>
-        )}
+
+          {events.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-24 gap-3 rounded-2xl border border-[#2a2a38] bg-[#13131a]">
+              <CalendarDays size={36} className="text-[#3a3a52]" />
+              <p className="text-sm font-medium text-[#6a6a8a]">
+                No upcoming events
+              </p>
+              <p className="text-xs text-[#3a3a52]">
+                Events from your communities will appear here
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-4">
+              {events.map((event: any) => (
+                <EventCard key={event._id} event={event} />
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
+
+      <AddEventModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        isPending={isCreating}
+        communities={me?.myCommunities ?? []}
+        onSubmit={(values: addEventsReqBodyType) => {
+          if (!values.community) {
+            toast.error("Please select a community");
+            return;
+          }
+          mutate(values, {
+            onSuccess: () => setOpenModal(false),
+          });
+        }}
+      />
+    </>
   );
 };
 
