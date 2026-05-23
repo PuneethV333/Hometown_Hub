@@ -7,11 +7,14 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { Auth } from "./config/firebase.config";
 import { useGetMe } from "./Hooks/useGetMe";
 import Spinner from "./components/Spinner";
+import CommunityPage from "./Pages/SubPages/CommunityPage/CommunityPage";
 
 const Login = lazy(() => import("./Pages/Login"));
 const Onboarding = lazy(() => import("./Pages/Onboarding"));
 const Home = lazy(() => import("./Pages/Home"));
-const Dashboard = lazy(() => import("./Pages/SubPages/dashboard/Dashboard"));
+const Dashboard = lazy(
+  () => import("./Pages/SubPages/dashboard/Dashboard")
+);
 
 const App = () => {
   const [user, authLoading] = useAuthState(Auth);
@@ -19,8 +22,8 @@ const App = () => {
   const { data, isPending } = useGetMe();
 
   if (authLoading || (user && isPending)) {
-  return <Spinner />;
-}
+    return <Spinner />;
+  }
 
   return (
     <>
@@ -34,21 +37,49 @@ const App = () => {
               !user ? (
                 <Login />
               ) : !data?.isProfileComplete ? (
-                <Navigate to="/on-boarding" />
+                <Navigate to="/on-boarding" replace />
               ) : (
-                <Navigate to="/home" />
+                <Navigate to="/home" replace />
               )
             }
           />
 
           <Route
             path="/on-boarding"
-            element={user ? <Onboarding /> : <Navigate to="/login" />}
+            element={
+              !user ? (
+                <Navigate to="/login" replace />
+              ) : data?.isProfileComplete ? (
+                <Navigate to="/home" replace />
+              ) : (
+                <Onboarding />
+              )
+            }
           />
-          
-          <Route path="/home" element={user ? <Home /> : <Navigate to="/login" />}>
-            <Route index element={<Dashboard/>}/>
+
+          <Route
+            path="/home"
+            element={
+              user ? (
+                data?.isProfileComplete ? (
+                  <Home />
+                ) : (
+                  <Navigate to="/on-boarding" replace />
+                )
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          >
+            <Route index element={<Dashboard />} />
+
+            <Route
+              path="community/:id"
+              element={<CommunityPage />}
+            />
           </Route>
+
+          <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </Suspense>
     </>

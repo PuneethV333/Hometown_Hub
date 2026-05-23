@@ -56,12 +56,10 @@ const SideBar = ({ user }: SideBarProps) => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  // populated communities directly
   const communities = user?.myCommunities ?? [];
 
   return (
     <div className="flex flex-col h-full">
-      {/* Logo */}
       <div className="p-6 border-b border-[#2a2a38]">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded-lg bg-[#1a1230] border border-[#2a2a38] flex items-center justify-center shrink-0">
@@ -96,7 +94,6 @@ const SideBar = ({ user }: SideBarProps) => {
         </div>
       </div>
 
-      {/* Nav */}
       <nav className="flex-1 px-3 py-6 overflow-y-auto scrollbar-none">
         <div className="space-y-1 mb-8">
           {navItems.map(({ name, path, icon: Icon }) => (
@@ -116,7 +113,6 @@ const SideBar = ({ user }: SideBarProps) => {
           ))}
         </div>
 
-        {/* Communities */}
         <div className="border-t border-[#2a2a38] pt-4">
           <button
             onClick={() => setExpandCommunities((v) => !v)}
@@ -140,12 +136,9 @@ const SideBar = ({ user }: SideBarProps) => {
                 communities.map((community) => (
                   <button
                     key={community._id}
-                    onClick={() =>
-                      navigate(`/home/communities/${community._id}`)
-                    }
+                    onClick={() => navigate(`/home/community/${community._id}`)}
                     className="w-full flex items-center gap-3 px-4 py-2 rounded-lg text-[#7b7a9a] hover:text-[#f0eeff] hover:bg-[#1a1a24] transition-all group"
                   >
-                    {/* community icon */}
                     <div className="w-6 h-6 rounded-md overflow-hidden shrink-0">
                       {community.icon ? (
                         <img
@@ -159,12 +152,11 @@ const SideBar = ({ user }: SideBarProps) => {
                             community.name,
                           )} flex items-center justify-center text-[10px] font-bold text-white`}
                         >
-                          {community.name.charAt(0).toUpperCase()}
+                          {community.name?.charAt(0).toUpperCase()}
                         </div>
                       )}
                     </div>
 
-                    {/* info */}
                     <div className="flex-1 text-left min-w-0">
                       <p className="text-sm font-medium text-[#f0eeff] truncate group-hover:text-violet-400 transition-colors">
                         {community.name}
@@ -198,7 +190,6 @@ const SideBar = ({ user }: SideBarProps) => {
                 </div>
               )}
 
-              {/* Join button */}
               <button
                 onClick={() => navigate("/home/communities")}
                 className="w-full mt-3 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[#2d1f5e] border border-violet-600/30 text-[#c4b5fd] hover:bg-[#3a2970] transition-all text-sm font-medium"
@@ -211,7 +202,6 @@ const SideBar = ({ user }: SideBarProps) => {
         </div>
       </nav>
 
-      {/* Footer */}
       <div className="p-4 border-t border-[#2a2a38]">
         <div className="bg-[#1a1a24] rounded-xl p-3 border border-[#2a2a38]">
           <p className="text-xs text-[#7b7a9a] mb-2.5 leading-relaxed">

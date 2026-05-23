@@ -1,6 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { addPostApi, getPostApi, likePostApi } from "../Api/post.api";
+import {
+  addPostApi,
+  getCommunityPostApi,
+  getPostApi,
+  likePostApi,
+} from "../Api/post.api";
 import { Auth } from "../config/firebase.config";
 import type { addPostPayloadType } from "../types/post.types";
 
@@ -75,5 +80,14 @@ export const useAddPost = () => {
     onError: (err) => {
       console.error("Failed to create post:", err);
     },
+  });
+};
+
+export const useGetCommunityPosts = (communityId: string) => {
+  return useQuery({
+    queryKey: ["post", "community", communityId],
+    queryFn: () => getCommunityPostApi(communityId),
+    enabled: !!Auth.currentUser && !!communityId,
+    retry: false,
   });
 };

@@ -18,6 +18,11 @@ export const useGetSuggestedCommunities = () => {
   });
 };
 
+interface me{
+    data:userType,
+    source:string
+}
+
 export const useGetCommunity = (communityId: string) => {
   return useQuery({
     queryKey: ["community", communityId],
@@ -47,13 +52,13 @@ export const useJoinLeaveCommunity = () => {
         communityId,
       ]);
 
-      const prevUser = queryClient.getQueryData<userType>(["me"]);
+      const prevUser = queryClient.getQueryData<me>(["me"]);
 
       queryClient.setQueryData(["community", communityId], (old: any) => {
-        if (!old?.data || !prevUser) return old;
+        if (!old?.data || !prevUser?.data) return old;
 
-        const isMember = prevUser.myCommunities?.some(
-          (x: any) => x._id === communityId,
+        const isMember = prevUser.data.myCommunities?.some(
+          (x: any) => x?.toString() === communityId || x?._id === communityId,
         );
 
         return {
@@ -68,17 +73,23 @@ export const useJoinLeaveCommunity = () => {
       });
 
       queryClient.setQueryData(["me"], (old: any) => {
-        if (!old) return old;
+        if (!old?.data) return old;
 
-        const isMember = old.myCommunities?.some(
-          (x: any) => x._id === communityId,
+        const isMember = old.data.myCommunities?.some(
+          (x: any) => x?.toString() === communityId || x?._id === communityId,
         );
 
         return {
           ...old,
-          myCommunities: isMember
-            ? old.myCommunities.filter((x: any) => x._id !== communityId)
-            : [...old.myCommunities, { _id: communityId }],
+          data: {
+            ...old.data,
+            myCommunities: isMember
+              ? old.data.myCommunities.filter(
+                  (x: any) =>
+                    x?.toString() !== communityId && x?._id !== communityId,
+                )
+              : [...old.data.myCommunities, communityId],
+          },
         };
       });
 

@@ -11,6 +11,6 @@ export const getCommunityDataApi = async (communityId:string) => {
 }
 
 export const joinLeaveCommunityApi = async (communityId:string) => {
-    const res = await api.get(`/api/community/join/leave/${communityId}`)
+    const res = await api.post(`/api/community/join/leave/${communityId}`)
     return res.data;
 }
