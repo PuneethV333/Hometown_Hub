@@ -1,4 +1,4 @@
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, Model } from "mongoose";
 import { commentsType } from "../types/comments.types";
 
 const commentSchema = new Schema<commentsType>(
@@ -29,7 +29,11 @@ const commentSchema = new Schema<commentsType>(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
-export const Comment = model<commentsType>("Comment", commentSchema,"comment");
+const Comment: Model<commentsType> =
+  mongoose.models.Comment ||
+  mongoose.model<commentsType>("Comment", commentSchema, "comment");
+
+export default Comment;

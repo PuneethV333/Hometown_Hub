@@ -53,7 +53,7 @@ const postSchema = new Schema<postType>(
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 const Post: Model<postType> =

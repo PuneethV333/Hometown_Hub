@@ -6,6 +6,7 @@ import {
   joinOrLeaveCommunityServices,
 } from "../services/community.services";
 
+
 export const getSuggestedCommunities = async (req: Request, res: Response) => {
   try {
     const firebaseUid = req.user?.firebaseUid;

@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
 
-
-
 export interface postType {
   userId: mongoose.Types.ObjectId;
   communityId: mongoose.Types.ObjectId;
