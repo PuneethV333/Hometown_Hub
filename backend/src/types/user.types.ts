@@ -22,6 +22,6 @@ export interface userSchemaType extends Document {
 
 export const addPostReqBody = z.object({
     content:z.string().default(""),
-    image:z.url(),
+    image:z.url().optional(),
     communityId:z.string()
 })
