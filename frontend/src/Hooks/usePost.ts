@@ -9,6 +9,8 @@ import {
 } from "../Api/post.api";
 import { Auth } from "../config/firebase.config";
 import type { addPostPayloadType } from "../types/post.types";
+import { addCommentApi } from "../Api/comments.api";
+import toast from "react-hot-toast";
 
 export const useGetPost = () => {
   return useQuery({
@@ -100,5 +102,25 @@ export const useGetUserPost = () => {
     queryFn: getUserPostApi,
     enabled: !!Auth.currentUser,
     retry: false,
+  });
+};
+
+export const useAddComment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: addCommentApi,
+
+    onSuccess: (_, variables) => {
+      toast.success("Comment added");
+
+      queryClient.invalidateQueries({
+        queryKey: ["post", variables.postId],
+      });
+    },
+
+    onError: () => {
+      toast.error("Failed to add comment");
+    },
   });
 };

@@ -13,7 +13,7 @@ export const auth = async (req: Request, res: Response) => {
       });
     }
 
-    const { user, isNewUser } = await handleAuth(firebaseUid,provider);
+    const { user, isNewUser } = await handleAuth(firebaseUid, provider);
 
     const data: authResType = {
       firebaseUid: user.firebaseUid,

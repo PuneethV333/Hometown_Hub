@@ -65,3 +65,18 @@ export const onBoarding = async (req: Request, res: Response) => {
   }
 };
 
+export const adminData = async (req:Request,res:Response) => {
+    try {
+        const firebaseUid = req.user?.firebaseUid;
+        if(!firebaseUid){
+            return res.status(401).json({
+                message:"unauthorized"
+            })
+        }
+
+        
+        
+    } catch (err) {
+        res.status(500).json(getError(err))
+    }
+}

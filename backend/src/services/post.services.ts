@@ -3,17 +3,8 @@ import Community from "../models/community.models";
 import Post from "../models/post.models";
 import User from "../models/user.models";
 import { clearCache, getVal, setValKey } from "../utils/redis.utils";
-import Comment from "../models/comments.models";
 
 export const getPostServices = async (firebaseUid: string) => {
-  console.log("=== DEBUG INFO ===");
-  console.log("All registered models:", Object.keys(mongoose.models));
-  console.log("Comment in models?", "Comment" in mongoose.models);
-  console.log("Comment model direct:", mongoose.models.Comment);
-  console.log("Comment from import:", Comment);
-  console.log("Are they same?", mongoose.models.Comment === Comment);
-  console.log("===================");
-
   const cacheKey = `post:${firebaseUid}`;
 
   const cached = await getVal(cacheKey);
@@ -235,14 +226,6 @@ export const getCommunityPostsServices = async (
 };
 
 export const getUsersPostServices = async (firebaseUid: string) => {
-  console.log("=== DEBUG INFO ===");
-  console.log("All registered models:", Object.keys(mongoose.models));
-  console.log("Comment in models?", "Comment" in mongoose.models);
-  console.log("Comment model direct:", mongoose.models.Comment);
-  console.log("Comment from import:", Comment);
-  console.log("Are they same?", mongoose.models.Comment === Comment);
-  console.log("===================");
-
   const cacheKey = `posts:user:${firebaseUid}`;
   const cached = await getVal(cacheKey);
 

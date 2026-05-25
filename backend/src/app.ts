@@ -13,6 +13,7 @@ import { userRouter } from "./routes/user.routes";
 import { postRouter } from "./routes/post.routes";
 import { eventRouter } from "./routes/event.routes";
 import { communityRouter } from "./routes/community.routes";
+import { commentsRouter } from "./routes/comments.routes";
 
 const app = express();
 
@@ -42,6 +43,7 @@ app.use(
 app.use(redisMiddleWare);
 
 app.use("/api/auth", authRouter);
+app.use("/api/comments", commentsRouter);
 app.use("/api/user", userRouter);
 app.use("/api/posts", postRouter);
 app.use("/api/event", eventRouter);
