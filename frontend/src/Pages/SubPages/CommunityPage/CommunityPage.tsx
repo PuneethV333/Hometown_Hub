@@ -12,6 +12,7 @@ const CommunityPage = () => {
   const { data: me } = useGetMe();
   const { mutate: joinLeave, isPending: isJoining } = useJoinLeaveCommunity();
 
+
   const community = data?.data;
   
   const isMember = me?.myCommunities?.some(

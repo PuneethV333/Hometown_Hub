@@ -2,6 +2,7 @@ import Community from "../models/community.models";
 import User from "../models/user.models";
 import { clearCache, getVal, setValKey } from "../utils/redis.utils";
 import { AuthProvider } from "../types/express";
+import { createCommunityReqBodyType } from "../types/community.types";
 
 export const getSuggestedCommunitiesService = async (firebaseUid: string) => {
   try {
@@ -110,4 +111,51 @@ export const joinOrLeaveCommunityServices = async (
   } catch (err) {
     throw err;
   }
+};
+
+export const createCommunityServices = async (
+  firebaseUid: string,
+  provider: AuthProvider,
+  payload: createCommunityReqBodyType,
+) => {
+  const user = await User.findOne({ firebaseUid: firebaseUid });
+
+  if (!user) {
+    throw new Error("user not found");
+  }
+
+  const exists = await Community.findOne({ name: payload.name });
+  if (exists) {
+    throw new Error("Community with this name already exists");
+  }
+
+  const newCommunity = await Community.create({
+    name: payload.name,
+    createdBy: user._id,
+    location: {
+      town: payload.town,
+      city: payload.city,
+      state: payload.state,
+    },
+    type: payload.type,
+    icon: payload.icon,
+  });
+
+  if (!newCommunity) {
+    throw new Error("failed to create Community");
+  }
+
+  await User.findOneAndUpdate(
+    { firebaseUid },
+    {
+      role: "Moderator",
+      $addToSet: { myCommunities: newCommunity._id },
+    },
+  );
+
+  await clearCache(`user:${firebaseUid}:${provider}`);
+  await clearCache(`suggestions:${firebaseUid}`);
+  await clearCache(`post:${firebaseUid}`);
+
+  return { data: newCommunity };
 };

@@ -1,127 +1,153 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { config } from "../config/data.config";
 
-const GEOAPIFY_KEY = config.geoapifyAPIKey;
+const COUNTRIES_NOW_BASE_URL = "https://countriesnow.space/api/v0.1";
 
+// =========================
+// TYPES
+// =========================
 
-
-interface GeoProperty {
-  name?: string;
-  state_code?: string;
-  suburb?: string;
-  place_id?: string;
-  [key: string]: any;
+interface CountriesNowResponse<T> {
+  error: boolean;
+  msg: string;
+  data: T;
 }
 
-interface GeoFeature {
-  properties: GeoProperty;
-  [key: string]: any;
-}
+// =========================
+// STATIC STATES
+// =========================
 
-export interface GeoApiResponse {
-  features: GeoFeature[];
-  [key: string]: any;
-}
+const INDIAN_STATES = [
+  "Andhra Pradesh",
+  "Arunachal Pradesh",
+  "Assam",
+  "Bihar",
+  "Chhattisgarh",
+  "Goa",
+  "Gujarat",
+  "Haryana",
+  "Himachal Pradesh",
+  "Jharkhand",
+  "Karnataka",
+  "Kerala",
+  "Madhya Pradesh",
+  "Maharashtra",
+  "Manipur",
+  "Meghalaya",
+  "Mizoram",
+  "Nagaland",
+  "Odisha",
+  "Punjab",
+  "Rajasthan",
+  "Sikkim",
+  "Tamil Nadu",
+  "Telangana",
+  "Tripura",
+  "Uttar Pradesh",
+  "Uttarakhand",
+  "West Bengal",
+  "Andaman and Nicobar Islands",
+  "Chandigarh",
+  "Delhi",
+  "Jammu and Kashmir",
+  "Ladakh",
+  "Lakshadweep",
+  "Puducherry",
+];
 
+// =========================
+// API FUNCTIONS
+// =========================
 
-
-const fetchLocationApi = async (
-  text: string,
-  type: "state" | "city" | "suburb",
-  limit: number
-): Promise<GeoApiResponse> => {
-  const res = await axios.get(
-    "https://api.geoapify.com/v1/geocode/autocomplete",
-    {
-      params: {
-        text,
-        type,
-        filter: "countrycode:in",
-        limit,
-        apiKey: GEOAPIFY_KEY,
-      },
-    }
-  );
-  return res.data;
+export const fetchStatesApi = async (): Promise<string[]> => {
+  return INDIAN_STATES;
 };
 
-export const fetchStatesApi = (): Promise<GeoApiResponse> =>
-  fetchLocationApi("state", "state", 30);
+export const fetchCitiesApi = async (state: string): Promise<string[]> => {
+  const res = await axios.post<CountriesNowResponse<string[]>>(
+    `${COUNTRIES_NOW_BASE_URL}/countries/state/cities`,
+    {
+      country: "India",
+      state,
+    },
+  );
 
-export const fetchCitiesApi = (state: string): Promise<GeoApiResponse> =>
-  fetchLocationApi(state, "city", 20);
+  return res.data.data || [];
+};
 
-export const fetchTownsApi = (town: string): Promise<GeoApiResponse> =>
-  fetchLocationApi(town, "suburb", 15);
+// towns/suburbs are not supported
+// fallback to empty array
 
+export const fetchTownsApi = async (town: string): Promise<string[]> => {
+  if (!town) return [];
 
+  return [];
+};
 
+// =========================
+// QUERIES
+// =========================
 
 export const useFetchStates = () => {
-  return useQuery<GeoApiResponse, Error>({
+  return useQuery<string[], Error>({
     queryKey: ["states"],
     queryFn: fetchStatesApi,
-    staleTime: Infinity, 
-    retry: 2,
-    gcTime: 1000 * 60 * 60, 
+    staleTime: Infinity,
+    gcTime: 1000 * 60 * 60,
+    retry: 1,
   });
 };
-
 
 export const useFetchCities = (state: string) => {
-  return useQuery<GeoApiResponse, Error>({
+  return useQuery<string[], Error>({
     queryKey: ["cities", state],
+
     queryFn: () => fetchCitiesApi(state),
-    enabled: !!state && state.length > 0,
+
+    enabled: !!state,
+
     staleTime: Infinity,
-    retry: 2,
+
     gcTime: 1000 * 60 * 60,
-  });
-};
 
-
- 
-export const useFetchTowns = (town: string) => {
-  return useQuery<GeoApiResponse, Error>({
-    queryKey: ["towns", town],
-    queryFn: () => fetchTownsApi(town),
-    enabled: !!town && town.trim().length > 2,
-    staleTime: 1000 * 60 * 5, 
     retry: 1,
-    gcTime: 1000 * 60 * 10,
   });
 };
 
+export const useFetchTowns = (town: string) => {
+  return useQuery<string[], Error>({
+    queryKey: ["towns", town],
 
+    queryFn: () => fetchTownsApi(town),
 
+    enabled: !!town && town.trim().length > 2,
+
+    staleTime: 1000 * 60 * 5,
+
+    gcTime: 1000 * 60 * 10,
+
+    retry: 0,
+  });
+};
+
+// =========================
+// HELPERS
+// =========================
 
 export const useStateNames = () => {
-  const { data } = useFetchStates();
-  return (
-    data?.features
-      ?.map((feature) => feature.properties.name)
-      .filter(Boolean) as string[]
-  ) || [];
+  return INDIAN_STATES;
 };
-
 
 export const useCityNames = (state: string) => {
   const { data } = useFetchCities(state);
-  return (
-    data?.features
-      ?.map((feature) => feature.properties.name)
-      .filter(Boolean) as string[]
-  ) || [];
-};
 
+  return data || [];
+};
 
 export const useTownNames = (town: string) => {
   const { data } = useFetchTowns(town);
-  return (
-    data?.features
-      ?.map((feature) => feature.properties.suburb)
-      .filter(Boolean) as string[]
-  ) || [];
+
+  return data || [];
 };

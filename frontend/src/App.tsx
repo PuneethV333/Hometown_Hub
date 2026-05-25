@@ -10,13 +10,12 @@ import Spinner from "./components/Spinner";
 import CommunityPage from "./Pages/SubPages/CommunityPage/CommunityPage";
 import EventsPage from "./Pages/SubPages/Events/EventsPage";
 import Profile from "./Pages/SubPages/Profile/Profile";
+import Communities from "./Pages/SubPages/CommunityPage/Communities";
 
 const Login = lazy(() => import("./Pages/Login"));
 const Onboarding = lazy(() => import("./Pages/Onboarding"));
 const Home = lazy(() => import("./Pages/Home"));
-const Dashboard = lazy(
-  () => import("./Pages/SubPages/dashboard/Dashboard")
-);
+const Dashboard = lazy(() => import("./Pages/SubPages/dashboard/Dashboard"));
 
 const App = () => {
   const [user, authLoading] = useAuthState(Auth);
@@ -75,18 +74,13 @@ const App = () => {
           >
             <Route index element={<Dashboard />} />
 
-            <Route
-              path="community/:id"
-              element={<CommunityPage />}
-            />
-            <Route
-              path="events"
-              element={<EventsPage />}
-            />
-            <Route
-              path="profile"
-              element={<Profile />}
-            />
+            <Route path="communities" element={<Communities />} />
+
+            <Route path="community/:id" element={<CommunityPage />} />
+
+            <Route path="events" element={<EventsPage />} />
+
+            <Route path="profile" element={<Profile />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/login" replace />} />

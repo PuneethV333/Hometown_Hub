@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  createCommunityApi,
   getCommunityDataApi,
   getSuggestedCommunitiesApi,
   joinLeaveCommunityApi,
 } from "../Api/community.api";
 import { Auth } from "../config/firebase.config";
 import type { userType } from "../types/user.types";
+
+import toast from "react-hot-toast";
 
 export const useGetSuggestedCommunities = () => {
   return useQuery({
@@ -18,9 +21,9 @@ export const useGetSuggestedCommunities = () => {
   });
 };
 
-interface me{
-    data:userType,
-    source:string
+interface me {
+  data: userType;
+  source: string;
 }
 
 export const useGetCommunity = (communityId: string) => {
@@ -116,6 +119,32 @@ export const useJoinLeaveCommunity = () => {
       queryClient.invalidateQueries({
         queryKey: ["me"],
       });
+    },
+  });
+};
+
+export const useCreateCommunity = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: createCommunityApi,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["me"],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["user", "post"],
+      });
+
+      queryClient.invalidateQueries({ queryKey: ["suggestedCommunities"] });
+
+      toast.success("Community created");
+    },
+
+    onError: () => {
+      toast.error("Failed to create community");
     },
   });
 };
