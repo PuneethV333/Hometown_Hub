@@ -1,11 +1,10 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 
 import Spinner from "../components/Spinner";
 import { Auth } from "../config/firebase.config";
 import { useGetMe } from "../Hooks/useGetMe";
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   onBoardingSchema,
@@ -13,31 +12,21 @@ import {
 } from "../types/user.types";
 import { useOnBoarding } from "../Hooks/useOnboarding";
 import toast from "react-hot-toast";
-import {
-  useFetchStates,
-  useFetchCities,
-  useFetchTowns,
-} from "../Hooks/useHelpers";
+
+import { useFetchStates, useCityNames } from "../Hooks/useHelpers";
 
 const GENDERS = ["Male", "Female"];
 
 const Onboarding = () => {
   const navigate = useNavigate();
+
   const authData = Auth.currentUser;
 
   const { data: user, isPending } = useGetMe();
+
   const { mutate: onBoarding, isPending: onBoardingLoading } = useOnBoarding();
 
-  const [selectedState, setSelectedState] = useState("");
-  const [selectedCity, setSelectedCity] = useState("");
-  const [townSearchInput, setTownSearchInput] = useState("");
-  const [showTownDropdown, setShowTownDropdown] = useState(false);
-
-  const { data: statesData, isLoading: loadingStates } = useFetchStates();
-  const { data: citiesData, isLoading: loadingCities } =
-    useFetchCities(selectedState);
-  const { data: townsData, isLoading: loadingTowns } =
-    useFetchTowns(townSearchInput);
+  const { data: states = [], isLoading: loadingStates } = useFetchStates();
 
   const [onBoardingReqBody, setOnBoardingReqBody] =
     useState<onBoardingReqBodyType>({
@@ -45,36 +34,13 @@ const Onboarding = () => {
       name: authData?.displayName ?? "",
       phoneNumber: authData?.phoneNumber ?? "",
       gender: "",
-      city: selectedCity,
-      state: selectedState,
+      city: "",
+      state: "",
       town: "",
-      dob: new Date(),
+      dob: undefined as any,
     });
 
-  useEffect(() => {
-    setOnBoardingReqBody((prev) => ({
-      ...prev,
-      state: selectedState,
-      city: selectedCity,
-    }));
-  }, [selectedState, selectedCity]);
-
-  const states = useMemo(
-    () => (Array.isArray(statesData?.features) ? statesData.features : []),
-    [statesData],
-  );
-
-  const cities = useMemo(() => {
-    if (Array.isArray(citiesData?.features)) {
-      return citiesData.features.map((f: any) => f.properties.name);
-    }
-    return [];
-  }, [citiesData]);
-
-  const towns = useMemo(
-    () => (Array.isArray(townsData?.features) ? townsData.features : []),
-    [townsData],
-  );
+  const cities = useCityNames(onBoardingReqBody.state);
 
   useEffect(() => {
     if (user?.isProfileComplete) {
@@ -93,46 +59,21 @@ const Onboarding = () => {
   );
 
   const handleStateChange = useCallback((state: string) => {
-    setSelectedState(state);
-    setSelectedCity("");
-    setTownSearchInput("");
     setOnBoardingReqBody((prev) => ({
       ...prev,
+      state,
       city: "",
       town: "",
     }));
   }, []);
 
   const handleCityChange = useCallback((city: string) => {
-    setSelectedCity(city);
-    setTownSearchInput("");
     setOnBoardingReqBody((prev) => ({
       ...prev,
+      city,
       town: "",
     }));
   }, []);
-
-  const handleTownSearch = useCallback(
-    (value: string) => {
-      setTownSearchInput(value);
-      handleInputChange("town", value);
-
-      if (value.trim().length > 2) {
-        setShowTownDropdown(true);
-      } else {
-        setShowTownDropdown(false);
-      }
-    },
-    [handleInputChange],
-  );
-
-  const handleTownSelect = useCallback(
-    (suburb: string) => {
-      handleInputChange("town", suburb);
-      setShowTownDropdown(false);
-    },
-    [handleInputChange],
-  );
 
   const handleOnBoarding = useCallback(async () => {
     try {
@@ -140,6 +81,7 @@ const Onboarding = () => {
 
       if (!result.success) {
         const errors = result.error.flatten().fieldErrors;
+
         const firstError =
           errors.email?.[0] ||
           errors.name?.[0] ||
@@ -152,18 +94,26 @@ const Onboarding = () => {
           "Invalid inputs";
 
         toast.error(firstError);
+
         return;
       }
 
-      await onBoarding(result.data);
-      toast.success("Profile completed");
+      onBoarding(result.data, {
+        onSuccess: () => {
+          toast.success("Profile completed");
+        },
+        onError: () => {
+          toast.error("Failed to complete onboarding");
+        },
+      });
     } catch (err) {
       console.error(err);
+
       toast.error("Failed to complete onboarding");
     }
   }, [onBoardingReqBody, onBoarding]);
 
-  if (isPending || (loadingStates && !statesData)) {
+  if (isPending) {
     return <Spinner />;
   }
 
@@ -199,6 +149,7 @@ const Onboarding = () => {
           <div className="w-9 h-9 rounded-[10px] bg-[#1a1230] border border-[#2a2a38] flex items-center justify-center shrink-0">
             <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
               <rect x="1" y="1" width="9" height="9" rx="2" fill="#a78bfa" />
+
               <rect
                 x="12"
                 y="1"
@@ -208,6 +159,7 @@ const Onboarding = () => {
                 fill="#7c3aed"
                 opacity="0.6"
               />
+
               <rect
                 x="1"
                 y="12"
@@ -217,6 +169,7 @@ const Onboarding = () => {
                 fill="#7c3aed"
                 opacity="0.6"
               />
+
               <rect x="12" y="12" width="9" height="9" rx="2" fill="#a78bfa" />
             </svg>
           </div>
@@ -238,10 +191,10 @@ const Onboarding = () => {
         </div>
 
         <div className="flex flex-col gap-6">
-          {/* Email & Full Name */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <label className={LABEL_CLASS}>Email</label>
+
               <input
                 type="email"
                 value={onBoardingReqBody.email}
@@ -252,6 +205,7 @@ const Onboarding = () => {
 
             <div className="flex flex-col gap-1.5">
               <label className={LABEL_CLASS}>Full Name</label>
+
               <input
                 type="text"
                 placeholder="John Doe"
@@ -262,10 +216,10 @@ const Onboarding = () => {
             </div>
           </div>
 
-          {/* Phone & Gender */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <label className={LABEL_CLASS}>Phone Number</label>
+
               <input
                 type="tel"
                 placeholder="+91 98765 43210"
@@ -279,6 +233,7 @@ const Onboarding = () => {
 
             <div className="flex flex-col gap-1.5">
               <label className={LABEL_CLASS}>Gender</label>
+
               <select
                 value={onBoardingReqBody.gender}
                 onChange={(e) => handleInputChange("gender", e.target.value)}
@@ -288,6 +243,7 @@ const Onboarding = () => {
                 <option value="" disabled>
                   Select Gender
                 </option>
+
                 {GENDERS.map((gender) => (
                   <option key={gender} value={gender}>
                     {gender}
@@ -297,26 +253,24 @@ const Onboarding = () => {
             </div>
           </div>
 
-          {/* State & City */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex flex-col gap-1.5">
               <label className={LABEL_CLASS}>State</label>
+
               <select
-                value={selectedState}
+                disabled={loadingStates}
+                value={onBoardingReqBody.state}
                 onChange={(e) => handleStateChange(e.target.value)}
-                disabled={loadingStates || states.length === 0}
                 className={SELECT_CLASS}
                 style={SELECT_STYLE}
               >
                 <option value="" disabled>
                   {loadingStates ? "Loading states..." : "Select State"}
                 </option>
-                {states.map((state: any) => (
-                  <option
-                    key={state.properties?.state_code}
-                    value={state.properties?.name}
-                  >
-                    {state.properties?.name}
+
+                {states.map((state: string) => (
+                  <option key={state} value={state}>
+                    {state}
                   </option>
                 ))}
               </select>
@@ -324,22 +278,20 @@ const Onboarding = () => {
 
             <div className="flex flex-col gap-1.5">
               <label className={LABEL_CLASS}>City</label>
+
               <select
-                value={selectedCity}
+                value={onBoardingReqBody.city}
                 onChange={(e) => handleCityChange(e.target.value)}
-                disabled={
-                  !selectedState || loadingCities || cities.length === 0
-                }
+                disabled={!onBoardingReqBody.state}
                 className={SELECT_CLASS}
                 style={SELECT_STYLE}
               >
                 <option value="" disabled>
-                  {!selectedState
+                  {!onBoardingReqBody.state
                     ? "Select state first"
-                    : loadingCities
-                      ? "Loading cities..."
-                      : "Select City"}
+                    : "Select City"}
                 </option>
+
                 {cities.map((city: string) => (
                   <option key={city} value={city}>
                     {city}
@@ -349,68 +301,42 @@ const Onboarding = () => {
             </div>
           </div>
 
-          {/* Town Search */}
-          <div className="relative flex flex-col gap-1.5">
+          <div className="flex flex-col gap-1.5">
             <label className={LABEL_CLASS}>Town</label>
+
             <input
               type="text"
-              placeholder="Search town"
-              value={townSearchInput}
-              onChange={(e) => handleTownSearch(e.target.value)}
-              disabled={!selectedCity}
+              placeholder="Enter town"
+              value={onBoardingReqBody.town}
+              onChange={(e) => handleInputChange("town", e.target.value)}
+              disabled={!onBoardingReqBody.city}
               className={INPUT_CLASS}
             />
-
-            {showTownDropdown && towns.length > 0 && (
-              <div className="absolute top-full mt-1 w-full bg-[#13131a] border border-[#2a2a38] rounded-[10px] max-h-48 overflow-y-auto z-50">
-                {towns.map((town: any) => {
-                  const suburb = town?.properties?.suburb;
-                  if (!suburb) return null;
-
-                  return (
-                    <button
-                      key={town.properties.place_id}
-                      type="button"
-                      onClick={() => handleTownSelect(suburb)}
-                      className="w-full text-left px-3 py-2 text-sm text-[#f0eeff] hover:bg-[#1d1d28] transition-colors"
-                    >
-                      {suburb}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-
-            {loadingTowns && townSearchInput.length > 2 && (
-              <p className="text-xs text-[#7b7a9a]">Searching towns...</p>
-            )}
           </div>
 
-          {/* Date of Birth */}
           <div className="flex flex-col gap-1.5">
             <label className={LABEL_CLASS}>Date of Birth</label>
+
             <input
               type="date"
               value={
-                onBoardingReqBody.dob instanceof Date
-                  ? onBoardingReqBody.dob.toISOString().split("T")[0]
+                onBoardingReqBody.dob
+                  ? new Date(onBoardingReqBody.dob).toISOString().split("T")[0]
                   : ""
               }
-              onChange={(e) => {
-                const dateValue = e.target.value
-                  ? new Date(e.target.value)
-                  : new Date();
-                handleInputChange("dob", dateValue);
-              }}
+              onChange={(e) =>
+                handleInputChange("dob", new Date(e.target.value))
+              }
               className={INPUT_CLASS + " cursor-pointer"}
-              style={{ colorScheme: "dark" }}
+              style={{
+                colorScheme: "dark",
+              }}
             />
           </div>
 
-          {/* Submit Button */}
           <button
             onClick={handleOnBoarding}
-            disabled={onBoardingLoading || loadingCities || loadingTowns}
+            disabled={onBoardingLoading}
             className="w-full py-3 mt-4 rounded-[10px] text-white text-sm font-semibold tracking-tight cursor-pointer border-0
             bg-linear-to-br from-violet-600 to-violet-800
             shadow-[0_0_24px_rgba(124,58,237,0.35)]

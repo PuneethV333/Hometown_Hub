@@ -37,7 +37,7 @@ export const userSchema = z.object({
     name: z.string(),
     memberCount: z.number(),
     icon: z.string().optional(),
-    type: z.enum(["town", "city", "state"]).optional(), // add this
+    type: z.enum(["town", "city", "state"]).optional(), 
   }),
 ),
 });

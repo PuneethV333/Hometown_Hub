@@ -2,10 +2,7 @@ import { useState } from "react";
 import { X, Users, MapPin, Image } from "lucide-react";
 import { useCreateCommunity } from "../../../Hooks/useCommunity";
 
-import {
-  useCityNames,
-  useStateNames,
-} from "../../../Hooks/useHelpers";
+import { useCityNames, useStateNames } from "../../../Hooks/useHelpers";
 
 import { getImgUrl } from "../../../utils/getImgUrl";
 
@@ -16,50 +13,32 @@ interface CreateCommunityModalProps {
   onClose: () => void;
 }
 
-const CreateCommunityModal = ({
-  open,
-  onClose,
-}: CreateCommunityModalProps) => {
+const CreateCommunityModal = ({ open, onClose }: CreateCommunityModalProps) => {
   const [form, setForm] = useState({
     name: "",
-    type: "city" as
-      | "town"
-      | "city"
-      | "state",
+    type: "city" as "town" | "city" | "state",
     state: "",
     city: "",
     town: "",
     icon: "",
   });
 
-  const [iconFile, setIconFile] =
-    useState<File | null>(null);
+  const [iconFile, setIconFile] = useState<File | null>(null);
 
-  const [iconPreview, setIconPreview] =
-    useState("");
+  const [iconPreview, setIconPreview] = useState("");
 
-  const [uploading, setUploading] =
-    useState(false);
+  const [uploading, setUploading] = useState(false);
 
-  const {
-    mutate: createCommunity,
-    isPending,
-  } = useCreateCommunity();
-
-  // hooks
+  const { mutate: createCommunity, isPending } = useCreateCommunity();
 
   const states = useStateNames();
 
-  const cities = useCityNames(
-    form.state,
-  );
+  const cities = useCityNames(form.state);
 
   if (!open) return null;
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement
-    >,
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
 
@@ -67,10 +46,7 @@ const CreateCommunityModal = ({
       if (name === "type") {
         return {
           ...prev,
-          type: value as
-            | "town"
-            | "city"
-            | "state",
+          type: value as "town" | "city" | "state",
           city: "",
           town: "",
         };
@@ -100,59 +76,34 @@ const CreateCommunityModal = ({
     });
   };
 
-  const handleIconChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const file =
-      e.target.files?.[0] ?? null;
+  const handleIconChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
 
     setIconFile(file);
 
-    setIconPreview(
-      file
-        ? URL.createObjectURL(file)
-        : "",
-    );
+    setIconPreview(file ? URL.createObjectURL(file) : "");
   };
 
-  const handleSubmit = async (
-    e: React.FormEvent,
-  ) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // validation
-
     if (!form.name.trim()) {
-      toast.error(
-        "Community name required",
-      );
+      toast.error("Community name required");
       return;
     }
 
     if (!form.state) {
-      toast.error(
-        "Please select state",
-      );
+      toast.error("Please select state");
       return;
     }
 
-    if (
-      form.type !== "state" &&
-      !form.city
-    ) {
-      toast.error(
-        "Please select city",
-      );
+    if (form.type !== "state" && !form.city) {
+      toast.error("Please select city");
       return;
     }
 
-    if (
-      form.type === "town" &&
-      !form.town.trim()
-    ) {
-      toast.error(
-        "Please enter town",
-      );
+    if (form.type === "town" && !form.town.trim()) {
+      toast.error("Please enter town");
       return;
     }
 
@@ -162,13 +113,9 @@ const CreateCommunityModal = ({
       try {
         setUploading(true);
 
-        iconUrl = await getImgUrl(
-          iconFile,
-        );
+        iconUrl = await getImgUrl(iconFile);
       } catch {
-        toast.error(
-          "Icon upload failed",
-        );
+        toast.error("Icon upload failed");
         return;
       } finally {
         setUploading(false);
@@ -201,20 +148,14 @@ const CreateCommunityModal = ({
     );
   };
 
-  const isSubmitting =
-    isPending || uploading;
+  const isSubmitting = isPending || uploading;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
       <div className="w-full max-w-lg rounded-3xl border border-[#2a2a38] bg-[#13131a] shadow-2xl">
-        {/* HEADER */}
-
         <div className="flex items-center justify-between p-5 border-b border-[#2a2a38]">
           <div className="flex items-center gap-2">
-            <Users
-              size={20}
-              className="text-violet-400"
-            />
+            <Users size={20} className="text-violet-400" />
 
             <h2 className="text-lg font-semibold text-[#f0eeff]">
               Create Community
@@ -226,21 +167,14 @@ const CreateCommunityModal = ({
             onClick={onClose}
             className="p-2 rounded-lg hover:bg-[#1d1d28] transition-colors"
           >
-            <X
-              size={18}
-              className="text-[#7b7a9a]"
-            />
+            <X size={18} className="text-[#7b7a9a]" />
           </button>
         </div>
-
-        {/* FORM */}
 
         <form
           onSubmit={handleSubmit}
           className="p-5 space-y-4 max-h-[75vh] overflow-y-auto"
         >
-          {/* ICON */}
-
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-xl bg-[#1e1e2e] border border-[#2a2a38] overflow-hidden flex items-center justify-center shrink-0">
               {iconPreview ? (
@@ -250,10 +184,7 @@ const CreateCommunityModal = ({
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <Image
-                  size={20}
-                  className="text-[#3a3a52]"
-                />
+                <Image size={20} className="text-[#3a3a52]" />
               )}
             </div>
 
@@ -261,17 +192,13 @@ const CreateCommunityModal = ({
               <label className="flex items-center gap-2 px-3 py-2 rounded-xl border border-dashed border-[#2a2a38] text-[#3a3a52] hover:border-[#7c6fff] hover:text-[#7c6fff] transition-all cursor-pointer text-xs">
                 <Image size={13} />
 
-                {iconPreview
-                  ? "Change icon"
-                  : "Upload icon"}
+                {iconPreview ? "Change icon" : "Upload icon"}
 
                 <input
                   type="file"
                   accept="image/*"
                   className="hidden"
-                  onChange={
-                    handleIconChange
-                  }
+                  onChange={handleIconChange}
                 />
               </label>
 
@@ -290,8 +217,6 @@ const CreateCommunityModal = ({
             </div>
           </div>
 
-          {/* NAME */}
-
           <div>
             <label className="text-sm text-[#b0aecb] mb-1 block">
               Community Name
@@ -308,8 +233,6 @@ const CreateCommunityModal = ({
             />
           </div>
 
-          {/* TYPE */}
-
           <div>
             <label className="text-sm text-[#b0aecb] mb-1 block">
               Community Type
@@ -321,26 +244,16 @@ const CreateCommunityModal = ({
               onChange={handleChange}
               className="w-full h-11 rounded-xl bg-[#0d0d12] border border-[#2a2a38] px-4 text-sm text-white outline-none focus:border-[#7c6fff]"
             >
-              <option value="state">
-                State
-              </option>
+              <option value="state">State</option>
 
-              <option value="city">
-                City
-              </option>
+              <option value="city">City</option>
 
-              <option value="town">
-                Town
-              </option>
+              <option value="town">Town</option>
             </select>
           </div>
 
-          {/* STATE */}
-
           <div>
-            <label className="text-sm text-[#b0aecb] mb-1 block">
-              State
-            </label>
+            <label className="text-sm text-[#b0aecb] mb-1 block">State</label>
 
             <select
               name="state"
@@ -349,38 +262,25 @@ const CreateCommunityModal = ({
               required
               className="w-full h-11 rounded-xl bg-[#0d0d12] border border-[#2a2a38] px-4 text-sm text-white outline-none focus:border-[#7c6fff]"
             >
-              <option value="">
-                Select state
-              </option>
+              <option value="">Select state</option>
 
-              {states.map(
-                (state: string) => (
-                  <option
-                    key={state}
-                    value={state}
-                  >
-                    {state}
-                  </option>
-                ),
-              )}
+              {states.map((state: string) => (
+                <option key={state} value={state}>
+                  {state}
+                </option>
+              ))}
             </select>
           </div>
 
-          {/* CITY */}
-
           {form.type !== "state" && (
             <div>
-              <label className="text-sm text-[#b0aecb] mb-1 block">
-                City
-              </label>
+              <label className="text-sm text-[#b0aecb] mb-1 block">City</label>
 
               <select
                 name="city"
                 value={form.city}
                 onChange={handleChange}
-                disabled={
-                  !form.state
-                }
+                disabled={!form.state}
                 required
                 className="w-full h-11 rounded-xl bg-[#0d0d12] border border-[#2a2a38] px-4 text-sm text-white outline-none focus:border-[#7c6fff] disabled:opacity-50"
               >
@@ -392,21 +292,14 @@ const CreateCommunityModal = ({
                       : "Select city"}
                 </option>
 
-                {cities.map(
-                  (city: string) => (
-                    <option
-                      key={city}
-                      value={city}
-                    >
-                      {city}
-                    </option>
-                  ),
-                )}
+                {cities.map((city: string) => (
+                  <option key={city} value={city}>
+                    {city}
+                  </option>
+                ))}
               </select>
             </div>
           )}
-
-          {/* TOWN */}
 
           {form.type === "town" && (
             <div>
@@ -415,10 +308,7 @@ const CreateCommunityModal = ({
               </label>
 
               <div className="flex items-center gap-2 px-3 h-11 rounded-xl bg-[#0d0d12] border border-[#2a2a38] focus-within:border-[#7c6fff]">
-                <MapPin
-                  size={15}
-                  className="text-[#6a6a8a] shrink-0"
-                />
+                <MapPin size={15} className="text-[#6a6a8a] shrink-0" />
 
                 <input
                   type="text"
@@ -426,17 +316,13 @@ const CreateCommunityModal = ({
                   value={form.town}
                   onChange={handleChange}
                   placeholder="Enter town / area"
-                  disabled={
-                    !form.city
-                  }
+                  disabled={!form.city}
                   required
                   className="flex-1 bg-transparent outline-none text-sm text-white placeholder:text-[#4a4a62] disabled:opacity-50"
                 />
               </div>
             </div>
           )}
-
-          {/* ACTIONS */}
 
           <div className="flex justify-end gap-3 pt-2">
             <button

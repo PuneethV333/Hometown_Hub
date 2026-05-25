@@ -19,7 +19,7 @@ export const CommunityCard = ({
   return (
     <div className="bg-[#13131a] border border-[#2a2a38] rounded-2xl p-4 hover:border-[#3a3a52] transition-colors">
       <div className="flex items-center gap-3">
-        {/* Icon */}
+        
         <div
           className="w-10 h-10 rounded-xl overflow-hidden bg-[#1e1e2e] border border-[#2a2a38] flex items-center justify-center text-sm font-bold text-[#7c6fff] shrink-0 cursor-pointer"
           onClick={onClick}
@@ -35,7 +35,7 @@ export const CommunityCard = ({
           )}
         </div>
 
-        {/* Info */}
+        
         <div className="flex-1 min-w-0 cursor-pointer" onClick={onClick}>
           <div className="flex items-center gap-2">
             <p className="text-sm font-semibold text-[#e0e0f0] truncate">
@@ -61,7 +61,7 @@ export const CommunityCard = ({
           </div>
         </div>
 
-        {/* Action */}
+        
         {isMember ? (
           <button
             onClick={onClick}

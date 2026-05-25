@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import FeedSkeleton from "../../../components/dashboard/Helpers/FeedSkeleton";
 import PostCard from "../../../components/dashboard/Helpers/PostCard";
-// import { useGetCommunityPosts } from "../../../Hooks/usePost";
 
 
 import { Frown } from "lucide-react";

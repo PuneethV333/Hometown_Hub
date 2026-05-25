@@ -1,23 +1,13 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 const COUNTRIES_NOW_BASE_URL = "https://countriesnow.space/api/v0.1";
-
-// =========================
-// TYPES
-// =========================
 
 interface CountriesNowResponse<T> {
   error: boolean;
   msg: string;
   data: T;
 }
-
-// =========================
-// STATIC STATES
-// =========================
 
 const INDIAN_STATES = [
   "Andhra Pradesh",
@@ -57,10 +47,6 @@ const INDIAN_STATES = [
   "Puducherry",
 ];
 
-// =========================
-// API FUNCTIONS
-// =========================
-
 export const fetchStatesApi = async (): Promise<string[]> => {
   return INDIAN_STATES;
 };
@@ -77,18 +63,11 @@ export const fetchCitiesApi = async (state: string): Promise<string[]> => {
   return res.data.data || [];
 };
 
-// towns/suburbs are not supported
-// fallback to empty array
-
 export const fetchTownsApi = async (town: string): Promise<string[]> => {
   if (!town) return [];
 
   return [];
 };
-
-// =========================
-// QUERIES
-// =========================
 
 export const useFetchStates = () => {
   return useQuery<string[], Error>({
@@ -131,10 +110,6 @@ export const useFetchTowns = (town: string) => {
     retry: 0,
   });
 };
-
-// =========================
-// HELPERS
-// =========================
 
 export const useStateNames = () => {
   return INDIAN_STATES;
