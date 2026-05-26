@@ -3,26 +3,20 @@ import { useState } from "react";
 import { Send } from "lucide-react";
 import { useAddComment } from "../../../Hooks/usePost";
 
-
 interface CommentSectionProps {
   post: any;
   currentUserId?: string;
 }
 
 const getTimeAgo = (dateStr: string) => {
-  const diff = Math.floor(
-    (Date.now() - new Date(dateStr).getTime()) / 1000,
-  );
-  if (diff < 60)    return `${diff}s ago`;
-  if (diff < 3600)  return `${Math.floor(diff / 60)}m ago`;
+  const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
+  if (diff < 60) return `${diff}s ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
   if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
   return `${Math.floor(diff / 86400)}d ago`;
 };
 
-const CommentSection = ({
-  post,
-  currentUserId,
-}: CommentSectionProps) => {
+const CommentSection = ({ post, currentUserId }: CommentSectionProps) => {
   const [commentText, setCommentText] = useState("");
   const { mutate: addComment, isPending } = useAddComment();
 
@@ -42,7 +36,6 @@ const CommentSection = ({
 
   return (
     <div className="mt-4 pt-4 border-t border-[#2a2a38] space-y-3">
-      {/* Comment list */}
       {comments.length === 0 ? (
         <p className="text-xs text-[#3a3a52] text-center py-2">
           No comments yet. Be the first!
@@ -59,11 +52,7 @@ const CommentSection = ({
         </div>
       )}
 
-      {/* Add comment */}
-      <form
-        onSubmit={handleSubmit}
-        className="flex items-center gap-2"
-      >
+      <form onSubmit={handleSubmit} className="flex items-center gap-2">
         <input
           type="text"
           value={commentText}
@@ -98,8 +87,9 @@ const CommentItem = ({
   const isOwn = author?._id === currentUserId;
 
   return (
-    <div className={`flex items-start gap-2.5 ${isOwn ? "flex-row-reverse" : ""}`}>
-      {/* Avatar */}
+    <div
+      className={`flex items-start gap-2.5 ${isOwn ? "flex-row-reverse" : ""}`}
+    >
       <div className="w-7 h-7 rounded-full bg-[#1e1e2e] border border-[#2a2a38] flex items-center justify-center text-[10px] font-semibold text-[#7c6fff] overflow-hidden shrink-0">
         {author?.photoUrl ? (
           <img
@@ -108,11 +98,10 @@ const CommentItem = ({
             className="w-full h-full object-cover"
           />
         ) : (
-          author?.name?.[0]?.toUpperCase() ?? "U"
+          (author?.name?.[0]?.toUpperCase() ?? "U")
         )}
       </div>
 
-      {/* Bubble */}
       <div
         className={`flex-1 max-w-[80%] rounded-xl px-3 py-2 border ${
           isOwn
@@ -122,7 +111,7 @@ const CommentItem = ({
       >
         <div className="flex items-center justify-between gap-2 mb-0.5">
           <p className="text-[11px] font-semibold text-[#c0c0e0]">
-            {isOwn ? "You" : author?.name ?? "Unknown"}
+            {isOwn ? "You" : (author?.name ?? "Unknown")}
           </p>
           <p className="text-[10px] text-[#3a3a52]">
             {getTimeAgo(comment.createdAt)}

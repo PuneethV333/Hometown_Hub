@@ -17,6 +17,7 @@ import { commentsRouter } from "./routes/comments.routes";
 
 const app = express();
 
+app.set("trust proxy",1)
 app.use(morgan("dev"));
 app.use(helmet());
 
