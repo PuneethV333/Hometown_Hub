@@ -21,7 +21,7 @@ export const useGetPost = () => {
   });
 };
 
-export const useLikePost = () => {
+export const useLikePost = (currentUserId?: string) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -41,9 +41,11 @@ export const useLikePost = () => {
             posts: old.data?.posts?.map((post: any) => {
               if (post._id !== postId) return post;
 
-              const isLiked = post.likedBy?.some(
-                (id: any) => id?.toString() === postId,
-              );
+                const isLiked = post.likedBy?.some(
+        (id: any) =>
+          id?.toString() === currentUserId ||
+          id?._id?.toString() === currentUserId,
+      );
 
               return {
                 ...post,

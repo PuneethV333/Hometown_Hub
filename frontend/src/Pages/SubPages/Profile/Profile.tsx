@@ -133,7 +133,7 @@ const ProfilePage = () => {
           ) : (
             <div className="flex flex-col gap-4">
               {posts.map((post: any) => (
-                <PostCard key={post._id} post={post} currentUserId={me?._id} />
+                <PostCard key={post._id} post={post}  />
               ))}
             </div>
           )}

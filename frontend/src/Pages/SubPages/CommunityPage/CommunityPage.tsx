@@ -36,7 +36,7 @@ const CommunityPage = () => {
           isJoining={isJoining}
           onJoinLeave={() => joinLeave(id!)}
         />
-        <CommunityFeed communityId={id!} currentUserId={me?._id} />
+        <CommunityFeed communityId={id!} />
       </div>
     </div>
   );

@@ -8,10 +8,9 @@ import { useGetCommunityPosts } from "../../../Hooks/usePost";
 
 interface CommunityFeedProps {
   communityId: string;
-  currentUserId?: string;
 }
 
-const CommunityFeed = ({ communityId, currentUserId }: CommunityFeedProps) => {
+const CommunityFeed = ({ communityId }: CommunityFeedProps) => {
   const { data, isPending, isError } = useGetCommunityPosts(communityId);
 
   const posts = data?.posts ?? [];
@@ -38,7 +37,7 @@ const CommunityFeed = ({ communityId, currentUserId }: CommunityFeedProps) => {
         </div>
       ) : (
         posts.map((post: any) => (
-          <PostCard key={post._id} post={post} currentUserId={currentUserId} />
+          <PostCard key={post._id} post={post} />
         ))
       )}
     </div>

@@ -35,7 +35,7 @@ const Feed = () => {
         </div>
       ) : (
         posts.map((post: any) => (
-          <PostCard key={post._id} post={post} currentUserId={me?._id} />
+          <PostCard key={post._id} post={post} />
         ))
       )}
     </div>
