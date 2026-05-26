@@ -9,28 +9,28 @@ import {
 } from "lucide-react";
 import { useGetAdminData } from "../../../Hooks/useGetMe";
 
-
 const AdminDashboard = () => {
   const { data, isPending, isError } = useGetAdminData();
 
   if (isPending) return <AdminSkeleton />;
 
-  if (isError) return (
-    <div className="flex items-center justify-center min-h-full">
-      <p className="text-sm text-[#4a4a62]">Failed to load admin data</p>
-    </div>
-  );
+  if (isError)
+    return (
+      <div className="flex items-center justify-center min-h-full">
+        <p className="text-sm text-[#4a4a62]">Failed to load admin data</p>
+      </div>
+    );
 
   return (
     <div className="min-h-full bg-[#0d0d12] p-6">
       <div className="max-w-5xl mx-auto space-y-6">
-        {/* Header */}
         <div>
           <h1 className="text-xl font-bold text-[#e0e0f0]">Admin Dashboard</h1>
-          <p className="text-xs text-[#3a3a52] mt-1">Platform overview and key metrics</p>
+          <p className="text-xs text-[#3a3a52] mt-1">
+            Platform overview and key metrics
+          </p>
         </div>
 
-        {/* Main KPI cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           <KpiCard
             title="Total Users"
@@ -52,11 +52,12 @@ const AdminDashboard = () => {
           />
         </div>
 
-        {/* Events breakdown */}
         <div className="bg-[#13131a] border border-[#2a2a38] rounded-2xl p-5">
           <div className="flex items-center gap-2 mb-5">
             <CalendarDays size={16} className="text-[#7c6fff]" />
-            <h2 className="text-sm font-semibold text-[#e0e0f0]">Events Overview</h2>
+            <h2 className="text-sm font-semibold text-[#e0e0f0]">
+              Events Overview
+            </h2>
             <span className="ml-auto text-xs px-2.5 py-1 rounded-full bg-[#1e1e2e] border border-[#2a2a38] text-[#7c6fff]">
               {data?.events?.total ?? 0} total
             </span>
@@ -90,10 +91,11 @@ const AdminDashboard = () => {
           </div>
         </div>
 
-        {/* Quick stats row */}
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-[#13131a] border border-[#2a2a38] rounded-2xl p-5">
-            <p className="text-xs text-[#3a3a52] mb-1">Avg posts per community</p>
+            <p className="text-xs text-[#3a3a52] mb-1">
+              Avg posts per community
+            </p>
             <p className="text-2xl font-bold text-[#e0e0f0]">
               {data?.totalCommunities
                 ? (data.totalPosts / data.totalCommunities).toFixed(1)
@@ -103,7 +105,9 @@ const AdminDashboard = () => {
           </div>
 
           <div className="bg-[#13131a] border border-[#2a2a38] rounded-2xl p-5">
-            <p className="text-xs text-[#3a3a52] mb-1">Avg members per community</p>
+            <p className="text-xs text-[#3a3a52] mb-1">
+              Avg members per community
+            </p>
             <p className="text-2xl font-bold text-[#e0e0f0]">
               {data?.totalCommunities
                 ? (data.totalUsers / data.totalCommunities).toFixed(1)
@@ -129,9 +133,24 @@ const KpiCard = ({
   color: "violet" | "indigo" | "purple";
 }) => {
   const colors = {
-    violet: { bg: "bg-[#1e1a2e]", border: "border-[#3a2a5e]", text: "text-[#7c6fff]", icon: "bg-[#2d1f5e]" },
-    indigo: { bg: "bg-[#1a1a2e]", border: "border-[#2a2a5e]", text: "text-indigo-400", icon: "bg-[#1f1f5e]" },
-    purple: { bg: "bg-[#1e1a2e]", border: "border-[#3a2a5e]", text: "text-purple-400", icon: "bg-[#2d1f5e]" },
+    violet: {
+      bg: "bg-[#1e1a2e]",
+      border: "border-[#3a2a5e]",
+      text: "text-[#7c6fff]",
+      icon: "bg-[#2d1f5e]",
+    },
+    indigo: {
+      bg: "bg-[#1a1a2e]",
+      border: "border-[#2a2a5e]",
+      text: "text-indigo-400",
+      icon: "bg-[#1f1f5e]",
+    },
+    purple: {
+      bg: "bg-[#1e1a2e]",
+      border: "border-[#3a2a5e]",
+      text: "text-purple-400",
+      icon: "bg-[#2d1f5e]",
+    },
   };
 
   const c = colors[color];
@@ -140,9 +159,7 @@ const KpiCard = ({
     <div className={`${c.bg} border ${c.border} rounded-2xl p-5`}>
       <div className="flex items-center justify-between mb-4">
         <p className="text-xs text-[#6a6a8a] font-medium">{title}</p>
-        <div className={`${c.icon} p-2 rounded-lg ${c.text}`}>
-          {icon}
-        </div>
+        <div className={`${c.icon} p-2 rounded-lg ${c.text}`}>{icon}</div>
       </div>
       <p className="text-3xl font-bold text-[#e0e0f0]">
         {value.toLocaleString()}
@@ -181,13 +198,19 @@ const AdminSkeleton = () => (
       <div className="w-48 h-6 rounded-lg bg-[#1e1e2e] animate-pulse" />
       <div className="grid grid-cols-3 gap-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-32 rounded-2xl bg-[#13131a] border border-[#2a2a38] animate-pulse" />
+          <div
+            key={i}
+            className="h-32 rounded-2xl bg-[#13131a] border border-[#2a2a38] animate-pulse"
+          />
         ))}
       </div>
       <div className="h-48 rounded-2xl bg-[#13131a] border border-[#2a2a38] animate-pulse" />
       <div className="grid grid-cols-2 gap-4">
         {[1, 2].map((i) => (
-          <div key={i} className="h-28 rounded-2xl bg-[#13131a] border border-[#2a2a38] animate-pulse" />
+          <div
+            key={i}
+            className="h-28 rounded-2xl bg-[#13131a] border border-[#2a2a38] animate-pulse"
+          />
         ))}
       </div>
     </div>
