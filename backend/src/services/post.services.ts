@@ -155,7 +155,7 @@ export const likePostServices = async (
           $inc: { likes: 1 },
         },
     {
-      new: true,
+      returnDocument: 'after'
     },
   ).lean();
 
