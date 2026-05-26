@@ -2,12 +2,19 @@
 import { Heart, MessageCircle, Share2 } from "lucide-react";
 import { useLikePost } from "../../../Hooks/usePost";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import CommentSection from "../../../Pages/SubPages/Comment/CommentSection";
+
 
 const getTimeAgo = (dateStr: string) => {
   const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
+
   if (diff < 60) return `${diff}s ago`;
+
   if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+
   if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+
   return `${Math.floor(diff / 86400)}d ago`;
 };
 
@@ -19,14 +26,18 @@ interface PostCardProps {
 const PostCard = ({ post, currentUserId }: PostCardProps) => {
   const author = post.userId;
   const community = post.communityId;
+
   const { mutate: likePost } = useLikePost();
+
   const navigate = useNavigate();
+
+  const [showComments, setShowComments] = useState(false);
 
   const isLiked = currentUserId
     ? post.likedBy?.some(
         (id: any) =>
           id?.toString() === currentUserId ||
-          id?._id?.toString() === currentUserId,
+          id?._id?.toString() === currentUserId
       )
     : false;
 
@@ -42,13 +53,15 @@ const PostCard = ({ post, currentUserId }: PostCardProps) => {
                 className="w-full h-full object-cover"
               />
             ) : (
-              (author?.name?.[0]?.toUpperCase() ?? "U")
+              author?.name?.[0]?.toUpperCase() ?? "U"
             )}
           </div>
+
           <div>
             <p className="text-sm font-semibold text-[#e0e0f0]">
               {author?.name ?? "Unknown"}
             </p>
+
             <p className="text-xs text-[#3a3a52]">
               {getTimeAgo(post.createdAt)}
             </p>
@@ -80,29 +93,43 @@ const PostCard = ({ post, currentUserId }: PostCardProps) => {
       )}
 
       <div className="flex items-center gap-1 pt-3 border-t border-[#2a2a38]">
-        
         <button
           onClick={() => likePost(post._id)}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all hover:bg-[#1e1e2e] ${
-            isLiked ? "text-[#ff6b8a]" : "text-[#3a3a52] hover:text-[#ff6b8a]"
+            isLiked
+              ? "text-[#ff6b8a]"
+              : "text-[#3a3a52] hover:text-[#ff6b8a]"
           }`}
         >
           <Heart size={14} className={isLiked ? "fill-[#ff6b8a]" : ""} />
+
           <span>{post.likes ?? 0}</span>
         </button>
 
-        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-[#3a3a52] hover:text-[#7c6fff] hover:bg-[#1e1e2e] transition-all">
+        <button
+          onClick={() => setShowComments((prev) => !prev)}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-[#3a3a52] hover:text-[#7c6fff] hover:bg-[#1e1e2e] transition-all"
+        >
           <MessageCircle size={14} />
+
           <span>{post.commentNumber ?? 0}</span>
         </button>
 
         <div className="ml-auto">
           <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs text-[#3a3a52] hover:text-[#4dd9ac] hover:bg-[#1e1e2e] transition-all">
             <Share2 size={14} />
+
             <span>Share</span>
           </button>
         </div>
       </div>
+
+      {showComments && (
+        <CommentSection
+          post={post}
+          currentUserId={currentUserId}
+        />
+      )}
     </div>
   );
 };

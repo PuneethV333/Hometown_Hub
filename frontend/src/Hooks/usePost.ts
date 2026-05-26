@@ -111,12 +111,11 @@ export const useAddComment = () => {
   return useMutation({
     mutationFn: addCommentApi,
 
-    onSuccess: (_, variables) => {
+    onSuccess: () => {
       toast.success("Comment added");
 
-      queryClient.invalidateQueries({
-        queryKey: ["post", variables.postId],
-      });
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["user", "post"] });
     },
 
     onError: () => {

@@ -26,7 +26,8 @@ export const addCommentServices = async (firebaseUid:string,payload:addCommentPa
     const updatedPost = await Post.findOneAndUpdate({
         _id:payload.postId
     },{
-        $addToSet:{comments:newComment._id}
+        $addToSet:{comments:newComment._id},
+        $inc:{commentNumber:1}
     })
     
     if(!updatedPost){
