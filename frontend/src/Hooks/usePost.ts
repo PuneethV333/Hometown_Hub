@@ -41,18 +41,22 @@ export const useLikePost = (currentUserId?: string) => {
             posts: old.data?.posts?.map((post: any) => {
               if (post._id !== postId) return post;
 
-                const isLiked = post.likedBy?.some(
-        (id: any) =>
-          id?.toString() === currentUserId ||
-          id?._id?.toString() === currentUserId,
-      );
+              const isLiked = post.likedBy?.some(
+                (id: any) =>
+                  id?.toString() === currentUserId ||
+                  id?._id?.toString() === currentUserId,
+              );
 
               return {
                 ...post,
                 likes: isLiked ? post.likes - 1 : post.likes + 1,
                 likedBy: isLiked
-                  ? post.likedBy.filter((id: any) => id?.toString() !== postId)
-                  : [...(post.likedBy ?? []), postId],
+                  ? post.likedBy.filter(
+                      (id: any) =>
+                        id?.toString() !== currentUserId &&
+                        id?._id?.toString() !== currentUserId,
+                    )
+                  : [...(post.likedBy ?? []), currentUserId],
               };
             }),
           },
@@ -65,12 +69,8 @@ export const useLikePost = (currentUserId?: string) => {
     onError: (_err, _vars, context) => {
       queryClient.setQueryData(["posts"], context?.previous);
     },
-
-    // removed onSettled — no refetch after like
-    // optimistic update handles UI instantly
   });
 };
-
 export const useAddPost = () => {
   const queryClient = useQueryClient();
 

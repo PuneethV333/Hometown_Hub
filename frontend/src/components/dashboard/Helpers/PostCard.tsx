@@ -8,8 +8,8 @@ import { useGetMe } from "../../../Hooks/useGetMe";
 
 const getTimeAgo = (dateStr: string) => {
   const diff = Math.floor((Date.now() - new Date(dateStr).getTime()) / 1000);
-  if (diff < 60)    return `${diff}s ago`;
-  if (diff < 3600)  return `${Math.floor(diff / 60)}m ago`;
+  if (diff < 60) return `${diff}s ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
   if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
   return `${Math.floor(diff / 86400)}d ago`;
 };
@@ -19,19 +19,18 @@ interface PostCardProps {
 }
 
 const PostCard = ({ post }: PostCardProps) => {
-  const author    = post.userId;
+  const author = post.userId;
   const community = post.communityId;
 
-  const { data: me }            = useGetMe();
-  const { mutate: likePost }    = useLikePost(me?._id);
-  const navigate                = useNavigate();
+  const { data: me } = useGetMe();
+  const { mutate: likePost } = useLikePost(me?._id);
+  const navigate = useNavigate();
   const [showComments, setShowComments] = useState(false);
 
   const isLiked = me?._id
     ? post.likedBy?.some(
         (id: any) =>
-          id?.toString() === me._id ||
-          id?._id?.toString() === me._id,
+          id?.toString() === me._id || id?._id?.toString() === me._id,
       )
     : false;
 
@@ -48,7 +47,7 @@ const PostCard = ({ post }: PostCardProps) => {
                 className="w-full h-full object-cover"
               />
             ) : (
-              author?.name?.[0]?.toUpperCase() ?? "U"
+              (author?.name?.[0]?.toUpperCase() ?? "U")
             )}
           </div>
 
@@ -105,7 +104,9 @@ const PostCard = ({ post }: PostCardProps) => {
         <button
           onClick={() => setShowComments((prev) => !prev)}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs transition-all hover:bg-[#1e1e2e] ${
-            showComments ? "text-[#7c6fff]" : "text-[#3a3a52] hover:text-[#7c6fff]"
+            showComments
+              ? "text-[#7c6fff]"
+              : "text-[#3a3a52] hover:text-[#7c6fff]"
           }`}
         >
           <MessageCircle size={14} />
@@ -122,9 +123,7 @@ const PostCard = ({ post }: PostCardProps) => {
       </div>
 
       {/* Comments */}
-      {showComments && (
-        <CommentSection post={post} currentUserId={me?._id} />
-      )}
+      {showComments && <CommentSection post={post} currentUserId={me?._id} />}
     </div>
   );
 };
