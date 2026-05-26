@@ -106,6 +106,8 @@ export const joinOrLeaveCommunityServices = async (
     await clearCache(`community:${firebaseUid}:${communityId}`);
     await clearCache(`suggestions:${firebaseUid}`);
     await clearCache(`post:${firebaseUid}`);
+    await clearCache(`events:${firebaseUid}:upcoming`);
+
 
     return { data: updatedUser, joined: !isMember };
   } catch (err) {

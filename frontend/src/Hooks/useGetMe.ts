@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 
-import { getMeApi } from "../Api/user.api";
+import { getAdminApi, getMeApi } from "../Api/user.api";
 import type { userType } from "../types/user.types";
 import { Auth } from "../config/firebase.config";
 
@@ -15,4 +15,15 @@ export const useGetMe = () => {
     refetchOnWindowFocus: false,
     enabled: !!Auth.currentUser,
   });
-};  
+};
+
+export const useGetAdminData = () => {
+  const { data } = useGetMe();
+  return useQuery({
+    queryKey: ["admin"],
+    queryFn: getAdminApi,
+    select: (res) => res.data,
+    retry: false,
+    enabled: !!Auth.currentUser && data?.role === "Admin",
+  });
+};

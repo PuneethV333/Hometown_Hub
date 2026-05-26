@@ -181,6 +181,8 @@ export const likePostServices = async (postId: string, firebaseUid: string) => {
   }
 
   await clearCache(`post:${firebaseUid}`);
+  await clearCache(`posts:user:${firebaseUid}`);
+
 
   return {
     post: updated,

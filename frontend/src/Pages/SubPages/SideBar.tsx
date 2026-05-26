@@ -9,6 +9,7 @@ import {
   ChevronRight,
   Plus,
   Compass,
+  ShieldUser,
 } from "lucide-react";
 
 export interface Community {
@@ -22,6 +23,7 @@ export interface SideBarProps {
   user?: {
     name?: string;
     photoUrl?: string;
+    role?: string;
     myCommunities?: Community[];
   };
 }
@@ -58,6 +60,14 @@ const SideBar = ({ user }: SideBarProps) => {
 
   const communities = user?.myCommunities ?? [];
 
+  const finalNavItems =
+    user?.role === "Admin"
+      ? [
+          ...navItems,
+          { name: "Admin", path: "/home/admin", icon: ShieldUser },
+        ]
+      : navItems;
+
   return (
     <div className="flex flex-col h-full">
       <div className="p-6 border-b border-[#2a2a38]">
@@ -90,13 +100,15 @@ const SideBar = ({ user }: SideBarProps) => {
             </svg>
           </div>
 
-          <span className="text-sm font-bold text-[#f0eeff]">Hometown Hub</span>
+          <span className="text-sm font-bold text-[#f0eeff]">
+            Hometown Hub
+          </span>
         </div>
       </div>
 
       <nav className="flex-1 px-3 py-6 overflow-y-auto scrollbar-none">
         <div className="space-y-1 mb-8">
-          {navItems.map(({ name, path, icon: Icon }) => (
+          {finalNavItems.map(({ name, path, icon: Icon }) => (
             <button
               key={path}
               onClick={() => navigate(path)}
@@ -149,7 +161,7 @@ const SideBar = ({ user }: SideBarProps) => {
                       ) : (
                         <div
                           className={`w-full h-full bg-linear-to-br ${getAccent(
-                            community.name,
+                            community.name
                           )} flex items-center justify-center text-[10px] font-bold text-white`}
                         >
                           {community.name?.charAt(0).toUpperCase()}

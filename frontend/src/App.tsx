@@ -11,6 +11,7 @@ import CommunityPage from "./Pages/SubPages/CommunityPage/CommunityPage";
 import EventsPage from "./Pages/SubPages/Events/EventsPage";
 import Profile from "./Pages/SubPages/Profile/Profile";
 import Communities from "./Pages/SubPages/CommunityPage/Communities";
+import AdminDashboard from "./Pages/SubPages/Admin/AdminDashboard";
 
 const Login = lazy(() => import("./Pages/Login"));
 const Onboarding = lazy(() => import("./Pages/Onboarding"));
@@ -81,6 +82,7 @@ const App = () => {
             <Route path="events" element={<EventsPage />} />
 
             <Route path="profile" element={<Profile />} />
+            <Route path="admin" element={<AdminDashboard />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/login" replace />} />
