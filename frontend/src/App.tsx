@@ -7,16 +7,28 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { Auth } from "./config/firebase.config";
 import { useGetMe } from "./Hooks/useGetMe";
 import Spinner from "./components/Spinner";
-import CommunityPage from "./Pages/SubPages/CommunityPage/CommunityPage";
-import EventsPage from "./Pages/SubPages/Events/EventsPage";
-import Profile from "./Pages/SubPages/Profile/Profile";
-import Communities from "./Pages/SubPages/CommunityPage/Communities";
-import AdminDashboard from "./Pages/SubPages/Admin/AdminDashboard";
 
 const Login = lazy(() => import("./Pages/Login"));
 const Onboarding = lazy(() => import("./Pages/Onboarding"));
 const Home = lazy(() => import("./Pages/Home"));
+
 const Dashboard = lazy(() => import("./Pages/SubPages/dashboard/Dashboard"));
+
+const CommunityPage = lazy(
+  () => import("./Pages/SubPages/CommunityPage/CommunityPage"),
+);
+
+const EventsPage = lazy(() => import("./Pages/SubPages/Events/EventsPage"));
+
+const Profile = lazy(() => import("./Pages/SubPages/Profile/Profile"));
+
+const Communities = lazy(
+  () => import("./Pages/SubPages/CommunityPage/Communities"),
+);
+
+const AdminDashboard = lazy(
+  () => import("./Pages/SubPages/Admin/AdminDashboard"),
+);
 
 const App = () => {
   const [user, authLoading] = useAuthState(Auth);
@@ -82,6 +94,7 @@ const App = () => {
             <Route path="events" element={<EventsPage />} />
 
             <Route path="profile" element={<Profile />} />
+
             <Route path="admin" element={<AdminDashboard />} />
           </Route>
 
