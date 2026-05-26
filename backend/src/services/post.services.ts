@@ -124,8 +124,13 @@ export const addPostServices = async (
   return newPost;
 };
 
-export const likePostServices = async (postId: string, firebaseUid: string) => {
-  const user = await User.findOne({ firebaseUid }).select("_id").lean();
+export const likePostServices = async (
+  postId: string,
+  firebaseUid: string,
+) => {
+  const user = await User.findOne({ firebaseUid })
+    .select("_id")
+    .lean();
 
   if (!user) {
     const err: any = new Error("User not found");
@@ -133,56 +138,37 @@ export const likePostServices = async (postId: string, firebaseUid: string) => {
     throw err;
   }
 
-  const post = await Post.findById(postId).select("likedBy").lean();
-
-  if (!post) {
-    const err: any = new Error("Post not found");
-    err.status = 404;
-    throw err;
-  }
-
-  const alreadyLiked = post.likedBy.some(
-    (id: any) => id.toString() === user._id.toString(),
-  );
+  const alreadyLiked = await Post.exists({
+    _id: postId,
+    likedBy: user._id,
+  });
 
   const updated = await Post.findByIdAndUpdate(
     postId,
     alreadyLiked
       ? {
-          $inc: {
-            likes: -1,
-          },
-
-          $pull: {
-            likedBy: user._id,
-          },
+          $pull: { likedBy: user._id },
+          $inc: { likes: -1 },
         }
       : {
-          $inc: {
-            likes: 1,
-          },
-
-          $addToSet: {
-            likedBy: user._id,
-          },
+          $addToSet: { likedBy: user._id },
+          $inc: { likes: 1 },
         },
-
     {
-      returnDocument: "after",
+      new: true,
     },
   ).lean();
 
   if (!updated) {
     const err: any = new Error("Failed to update post");
-
     err.status = 500;
-
     throw err;
   }
 
-  await clearCache(`post:${firebaseUid}`);
-  await clearCache(`posts:user:${firebaseUid}`);
-
+  await Promise.all([
+    clearCache(`post:${firebaseUid}`),
+    clearCache(`posts:user:${firebaseUid}`),
+  ]);
 
   return {
     post: updated,
