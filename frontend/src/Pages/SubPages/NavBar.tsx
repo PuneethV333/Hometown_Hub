@@ -6,7 +6,7 @@ import {
   Bell,
   ChevronDown,
   User,
-  Settings,
+//   Settings,
   LogOut,
 } from "lucide-react";
 import { logout } from "../../services/auth.services";
@@ -125,14 +125,14 @@ const NavBar = ({ user }: NavBarProps) => {
                     setIsProfileMenuOpen(false);
                   }}
                 />
-                <DropdownItem
+                {/* <DropdownItem
                   icon={<Settings size={14} />}
                   label="Settings"
                   onClick={() => {
                     navigate("/home/settings");
                     setIsProfileMenuOpen(false);
                   }}
-                />
+                /> */}
               </div>
 
               <div className="py-1.5 border-t border-[#2a2a38]">

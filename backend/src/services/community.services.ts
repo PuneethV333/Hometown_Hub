@@ -102,12 +102,13 @@ export const joinOrLeaveCommunityServices = async (
       { returnDocument: "after" },
     );
 
-    await clearCache(`user:${firebaseUid}:${provider}`);
-    await clearCache(`community:${firebaseUid}:${communityId}`);
-    await clearCache(`suggestions:${firebaseUid}`);
-    await clearCache(`post:${firebaseUid}`);
-    await clearCache(`events:${firebaseUid}:upcoming`);
-
+    Promise.all([
+      await clearCache(`user:${firebaseUid}:${provider}`),
+      await clearCache(`community:${firebaseUid}:${communityId}`),
+      await clearCache(`suggestions:${firebaseUid}`),
+      await clearCache(`post:${firebaseUid}`),
+      await clearCache(`events:${firebaseUid}:upcoming`),
+    ]);
 
     return { data: updatedUser, joined: !isMember };
   } catch (err) {
@@ -155,9 +156,11 @@ export const createCommunityServices = async (
     },
   );
 
-  await clearCache(`user:${firebaseUid}:${provider}`);
-  await clearCache(`suggestions:${firebaseUid}`);
-  await clearCache(`post:${firebaseUid}`);
+  Promise.all([
+    await clearCache(`user:${firebaseUid}:${provider}`),
+    await clearCache(`suggestions:${firebaseUid}`),
+    await clearCache(`post:${firebaseUid}`),
+  ]);
 
   return { data: newCommunity };
 };

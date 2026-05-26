@@ -12,8 +12,6 @@ export const useOnBoarding = () => {
         mutationKey:["me"],
         
         onSuccess:() => {
-            
-            toast.success("on-boarding completed")
             navigate("/home")
         },
         onError:() => {

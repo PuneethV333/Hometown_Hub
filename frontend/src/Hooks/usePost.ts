@@ -21,48 +21,36 @@ export const useGetPost = () => {
   });
 };
 
-export const useLikePost = (currentUserId?: string) => {
+export const useLikePost = () => {
   const queryClient = useQueryClient();
-
-  const getId = (value: any) =>
-    typeof value === "string"
-      ? value
-      : value?._id?.toString() || value?.toString();
 
   return useMutation({
     mutationFn: (postId: string) => likePostApi(postId),
 
     onMutate: async (postId) => {
-      await queryClient.cancelQueries({
-        queryKey: ["posts"],
-      });
+      await queryClient.cancelQueries({ queryKey: ["posts"] });
 
       const previous = queryClient.getQueryData(["posts"]);
 
       queryClient.setQueryData(["posts"], (old: any) => {
         if (!old) return old;
-
         return {
           ...old,
           data: {
             ...old.data,
-            posts: old.data.posts.map((post: any) => {
+            posts: old.data?.posts?.map((post: any) => {
               if (post._id !== postId) return post;
 
               const isLiked = post.likedBy?.some(
-                (id: any) => getId(id) === currentUserId,
+                (id: any) => id?.toString() === postId,
               );
 
               return {
                 ...post,
-
-                likes: isLiked ? Math.max(0, post.likes - 1) : post.likes + 1,
-
+                likes: isLiked ? post.likes - 1 : post.likes + 1,
                 likedBy: isLiked
-                  ? post.likedBy.filter(
-                      (id: any) => getId(id) !== currentUserId,
-                    )
-                  : [...(post.likedBy ?? []), currentUserId],
+                  ? post.likedBy.filter((id: any) => id?.toString() !== postId)
+                  : [...(post.likedBy ?? []), postId],
               };
             }),
           },
@@ -75,8 +63,12 @@ export const useLikePost = (currentUserId?: string) => {
     onError: (_err, _vars, context) => {
       queryClient.setQueryData(["posts"], context?.previous);
     },
+
+    // removed onSettled — no refetch after like
+    // optimistic update handles UI instantly
   });
 };
+
 export const useAddPost = () => {
   const queryClient = useQueryClient();
 
