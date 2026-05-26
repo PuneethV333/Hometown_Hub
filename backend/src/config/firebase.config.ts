@@ -1,11 +1,15 @@
-import admin from "firebase-admin"
-import serviceAccount from '../../serviceAccountKey.json'
+import admin from "firebase-admin";
+import { config } from "./data.config";
 
 if (!admin.apps.length) {
-    admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount as admin.ServiceAccount),
-    });
-    console.log('✅ Firebase Admin initialized successfully');
+  admin.initializeApp({
+    credential: admin.credential.cert({
+      projectId: config.firebaseProjectId,
+      clientEmail: config.firebaseClientEmail,
+      privateKey: config.firebasePrivateKey.replace(/\\n/g, "\n"),
+    }),
+  });
+  console.log("✅ Firebase Admin initialized successfully");
 }
 
-export default admin
+export default admin;

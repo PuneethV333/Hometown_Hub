@@ -10,6 +10,9 @@ const envSchema = z.object({
   JWT_SECRET: z.string(),
   REDIS_URL: z.string(),
   MONGO_URL: z.string(),
+  FIREBASE_PROJECT_ID: z.string(),
+  FIREBASE_CLIENT_EMAIL: z.string(),
+  FIREBASE_PRIVATE_KEY: z.string(),
 });
 
 const envValidation = envSchema.safeParse(process.env);
@@ -17,7 +20,6 @@ const envValidation = envSchema.safeParse(process.env);
 if (!envValidation.success) {
   console.error("\n❌ Environment Validation Failed:\n");
 
-  // Print each error clearly
   envValidation.error.issues.forEach((error) => {
     const field = error.path.join(".");
     const value = process.env[field];
@@ -27,13 +29,14 @@ if (!envValidation.success) {
     console.error("");
   });
 
-  // Print all env vars for debugging
   console.error("📋 All loaded env vars:");
   Object.entries(process.env).forEach(([key, value]) => {
     if (
-      ["PORT", "FRONTEND_URL", "JWT_SECRET", "REDIS_URL", "MONGO_URL"].includes(
-        key,
-      )
+      [
+        "PORT", "FRONTEND_URL", "JWT_SECRET",
+        "REDIS_URL", "MONGO_URL",
+        "FIREBASE_PROJECT_ID", "FIREBASE_CLIENT_EMAIL", "FIREBASE_PRIVATE_KEY",
+      ].includes(key)
     ) {
       console.error(`  ${key}: ${value ? "✅" : "❌"}`);
     }
@@ -49,6 +52,9 @@ export const config = {
   mongoUrl: envValidation.data.MONGO_URL,
   jwtSecret: envValidation.data.JWT_SECRET,
   redisUrl: envValidation.data.REDIS_URL,
+  firebaseProjectId: envValidation.data.FIREBASE_PROJECT_ID,
+  firebaseClientEmail: envValidation.data.FIREBASE_CLIENT_EMAIL,
+  firebasePrivateKey: envValidation.data.FIREBASE_PRIVATE_KEY,
 } as const;
 
 console.log("✅ Configuration loaded successfully");
