@@ -56,7 +56,7 @@ export const useLikePost = (currentUserId?: string) => {
                         id?.toString() !== currentUserId &&
                         id?._id?.toString() !== currentUserId,
                     )
-                  : [...(post.likedBy ?? []), currentUserId],
+                  : [...(post.likedBy ?? []), currentUserId], // ← currentUserId not postId
               };
             }),
           },
@@ -71,6 +71,7 @@ export const useLikePost = (currentUserId?: string) => {
     },
   });
 };
+
 export const useAddPost = () => {
   const queryClient = useQueryClient();
 

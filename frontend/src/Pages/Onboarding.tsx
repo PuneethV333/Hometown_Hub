@@ -101,6 +101,7 @@ const Onboarding = () => {
       onBoarding(result.data, {
         onSuccess: () => {
           toast.success("Profile completed");
+          navigate('/home')
         },
         onError: () => {
           toast.error("Failed to complete onboarding");
