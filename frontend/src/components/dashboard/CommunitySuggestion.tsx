@@ -16,7 +16,7 @@ const CommunitySuggestion = () => {
   if (isPending) return <SidebarSkeleton rows={3} />;
   if (isError) return null;
 
-  const communities: any[] = data ?? [];
+  const communities: any[] = data?.data ?? [];
 
   return (
     <div className="bg-[#13131a] border border-[#2a2a38] rounded-2xl p-4">

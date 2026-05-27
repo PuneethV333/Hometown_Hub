@@ -17,7 +17,7 @@ const Communities = () => {
   const { mutate: joinLeave, isPending: isJoining } = useJoinLeaveCommunity();
 
   const myCommunities = me?.myCommunities ?? [];
-  const suggestedCommunities = suggested ?? [];
+  const suggestedCommunities = suggested?.data ?? [];
 
   return (
     <>
