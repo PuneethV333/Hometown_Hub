@@ -50,6 +50,10 @@ export const useJoinLeaveCommunity = () => {
         queryKey: ["me"],
       });
 
+      await queryClient.cancelQueries({
+        queryKey: ["suggestedCommunities"],
+      });
+
       const prevCommunity = queryClient.getQueryData([
         "community",
         communityId,
