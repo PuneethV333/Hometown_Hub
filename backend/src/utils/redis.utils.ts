@@ -1,6 +1,6 @@
 import { redisClient } from "../config/redis";
 
-export const setValKey = async (key: string, data: string, Exp = 300) => {
+export const setValKey = async (key: string, data: string, Exp = 600) => {
   if (!key || !data) {
     throw new Error("provide all inputs");
   }

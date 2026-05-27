@@ -148,13 +148,15 @@ export const createCommunityServices = async (
     throw new Error("failed to create Community");
   }
 
-  await User.findOneAndUpdate(
-    { firebaseUid },
-    {
-      role: "Moderator",
-      $addToSet: { myCommunities: newCommunity._id },
-    },
-  );
+  if (user?.role !== "Admin" && user?.role !== "Moderator") {
+    await User.findOneAndUpdate(
+      { firebaseUid },
+      {
+        role: "Moderator",
+        $addToSet: { myCommunities: newCommunity._id },
+      },
+    );
+  }
 
   Promise.all([
     await clearCache(`user:${firebaseUid}:${provider}`),
