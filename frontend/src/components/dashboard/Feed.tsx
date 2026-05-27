@@ -11,7 +11,6 @@ const Feed = () => {
   const { data: me } = useGetMe();
 
   const posts = data?.data?.posts ?? [];
-  
 
   if (isPending) return <FeedSkeleton />;
   if (isError)
@@ -34,9 +33,7 @@ const Feed = () => {
           </p>
         </div>
       ) : (
-        posts.map((post: any) => (
-          <PostCard key={post._id} post={post} />
-        ))
+        posts.map((post: any) => <PostCard key={post._id} post={post} />)
       )}
     </div>
   );

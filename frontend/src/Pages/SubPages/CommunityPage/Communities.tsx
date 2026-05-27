@@ -58,7 +58,7 @@ const Communities = () => {
                     key={community._id}
                     community={community}
                     isMember
-                    onClick={() => navigate(`/home/communities/${community._id}`)}
+                    onClick={() => navigate(`/home/community/${community._id}`)}
                   />
                 ))}
               </div>
