@@ -16,7 +16,6 @@ export const useGetSuggestedCommunities = () => {
     queryFn: getSuggestedCommunitiesApi,
     queryKey: ["suggestedCommunities"],
     retry: false,
-    select: (res) => res,
     enabled: !!Auth.currentUser,
   });
 };
