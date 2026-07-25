@@ -36,7 +36,7 @@ app.use(compression());
 
 app.use(
   cors({
-    origin: config.frontendUrl,
+    origin: [config.frontendUrl, "http://localhost:5173"],
     credentials: true,
   }),
 );
