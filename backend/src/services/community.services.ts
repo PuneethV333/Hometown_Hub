@@ -102,12 +102,12 @@ export const joinOrLeaveCommunityServices = async (
       { returnDocument: "after" },
     );
 
-    Promise.all([
-      await clearCache(`user:${firebaseUid}:${provider}`),
-      await clearCache(`community:${firebaseUid}:${communityId}`),
-      await clearCache(`suggestions:${firebaseUid}`),
-      await clearCache(`post:${firebaseUid}`),
-      await clearCache(`events:${firebaseUid}:upcoming`),
+    await Promise.all([
+      clearCache(`user:${firebaseUid}:${provider}`),
+      clearCache(`community:${firebaseUid}:${communityId}`),
+      clearCache(`suggestions:${firebaseUid}`),
+      clearCache("post:*"),
+      clearCache("events:*")
     ]);
 
     return { data: updatedUser, joined: !isMember };
@@ -142,26 +142,27 @@ export const createCommunityServices = async (
     },
     type: payload.type,
     icon: payload.icon,
+    memberCount: 1,
   });
 
   if (!newCommunity) {
     throw new Error("failed to create Community");
   }
 
-  if (user?.role !== "Admin" && user?.role !== "Moderator") {
-    await User.findOneAndUpdate(
-      { firebaseUid },
-      {
-        role: "Moderator",
-        $addToSet: { myCommunities: newCommunity._id },
-      },
-    );
-  }
+  // A creator must be a member too; otherwise they cannot create the first post
+  // and Admin/Moderator creators were previously omitted entirely.
+  await User.findOneAndUpdate(
+    { firebaseUid },
+    {
+      ...(user.role !== "Admin" && user.role !== "Moderator" ? { role: "Moderator" } : {}),
+      $addToSet: { myCommunities: newCommunity._id },
+    },
+  );
 
-  Promise.all([
-    await clearCache(`user:${firebaseUid}:${provider}`),
-    await clearCache(`suggestions:${firebaseUid}`),
-    await clearCache(`post:${firebaseUid}`),
+  await Promise.all([
+    clearCache(`user:${firebaseUid}:${provider}`),
+    clearCache(`suggestions:${firebaseUid}`),
+    clearCache("post:*"),
   ]);
 
   return { data: newCommunity };

@@ -118,8 +118,7 @@ export const addPostServices = async (
     image,
   });
 
-  await clearCache(`post:${firebaseUid}`);
-  await clearCache(`posts:user:${firebaseUid}`);
+  await Promise.all([clearCache("post:*"), clearCache("posts:user:*")]);
 
   return newPost;
 };
@@ -138,26 +137,21 @@ export const likePostServices = async (
     throw err;
   }
 
-  const alreadyLiked = await Post.exists({
-    _id: postId,
-    likedBy: user._id,
-  });
-
-  const updated = await Post.findByIdAndUpdate(
-    postId,
-    alreadyLiked
-      ? {
-          $pull: { likedBy: user._id },
-          $inc: { likes: -1 },
-        }
-      : {
-          $addToSet: { likedBy: user._id },
-          $inc: { likes: 1 },
-        },
+  // Determine membership and update in a single document operation. The former
+  // exists-then-update sequence allowed simultaneous requests to increment likes
+  // twice even though $addToSet stored the user only once.
+  const updated = await Post.findOneAndUpdate({ _id: postId }, [
+    { $set: { __wasLiked: { $in: [user._id, { $ifNull: ["$likedBy", []] }] } } },
     {
-      returnDocument: 'after'
+      $set: {
+        likedBy: {
+          $cond: ["$__wasLiked", { $setDifference: ["$likedBy", [user._id]] }, { $setUnion: ["$likedBy", [user._id]] }],
+        },
+        likes: { $max: [0, { $add: ["$likes", { $cond: ["$__wasLiked", -1, 1] }] }] },
+      },
     },
-  ).lean();
+    { $unset: "__wasLiked" },
+  ], { returnDocument: "after" }).lean();
 
   if (!updated) {
     const err: any = new Error("Failed to update post");
@@ -165,14 +159,11 @@ export const likePostServices = async (
     throw err;
   }
 
-  await Promise.all([
-    clearCache(`post:${firebaseUid}`),
-    clearCache(`posts:user:${firebaseUid}`),
-  ]);
+  await Promise.all([clearCache("post:*"), clearCache("posts:user:*")]);
 
   return {
     post: updated,
-    liked: !alreadyLiked,
+    liked: updated.likedBy.some((id) => id.toString() === user._id.toString()),
   };
 };
 

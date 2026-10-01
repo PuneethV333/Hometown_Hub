@@ -69,6 +69,12 @@ export const useLikePost = (currentUserId?: string) => {
     onError: (_err, _vars, context) => {
       queryClient.setQueryData(["posts"], context?.previous);
     },
+
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["user", "post"] });
+      queryClient.invalidateQueries({ queryKey: ["post", "community"] });
+    },
   });
 };
 
@@ -81,6 +87,7 @@ export const useAddPost = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       queryClient.invalidateQueries({ queryKey: ["user", "post"] });
+      queryClient.invalidateQueries({ queryKey: ["post", "community"] });
     },
 
     onError: (err) => {

@@ -18,7 +18,6 @@ const eventSchema = new Schema<IEvent>(
     },
     endDate: {
       type: Date,
-      required:true,
     },
     location: {
       type: String,

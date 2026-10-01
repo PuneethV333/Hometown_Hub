@@ -34,7 +34,11 @@ export const addCommentServices = async (firebaseUid:string,payload:addCommentPa
         throw new Error("failed to add to post")
     }
     
-    await clearCache(`post:${firebaseUid}`)
+    // The post can be present in any member's home or community feed.
+    await Promise.all([
+        clearCache("post:*"),
+        clearCache("posts:user:*")
+    ]);
     
     return updatedPost
 }
