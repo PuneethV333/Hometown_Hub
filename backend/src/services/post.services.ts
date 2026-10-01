@@ -151,7 +151,7 @@ export const likePostServices = async (
       },
     },
     { $unset: "__wasLiked" },
-  ], { returnDocument: "after" }).lean();
+  ], { returnDocument: "after", updatePipeline: true }).lean();
 
   if (!updated) {
     const err: any = new Error("Failed to update post");
