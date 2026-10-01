@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { logout } from "../../services/auth.services";
 import { getInitials } from "../../utils/getInitials";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface NavBarProps {
   user?: {
@@ -25,12 +26,16 @@ const NavBar = ({ user }: NavBarProps) => {
   const navigate = useNavigate();
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const queryClient = useQueryClient();
 
   const handleLogout = async () => {
     try {
       const res = await logout();
       if (!res) toast.error("Logout failed");
       else {
+        // Queries use account-independent keys (for example ["me"]). Without
+        // this, a different user can receive the previous user's cached profile.
+        queryClient.clear();
         toast.success("Logged out successfully");
         navigate("/login");
       }
@@ -177,3 +182,4 @@ const DropdownItem = ({
 );
 
 export default NavBar;
+

@@ -73,8 +73,10 @@ export const signUpViaEmail = async (payload: signUpViaEmailType) => {
 
 export const viaGoogle = async () => {
   try {
-    
     await signOut(Auth);
+    // Firebase sign-out does not sign out of Google in the browser. Ask which
+    // Google account to use instead of silently reusing the previous one.
+    googleAuthProvider.setCustomParameters({ prompt: "select_account" });
 
     const res = await signInWithPopup(Auth, googleAuthProvider);
     if (!res) {
@@ -94,6 +96,7 @@ export const viaGoogle = async () => {
 export const logout = async () => {
   try {
     await signOut(Auth);
+    localStorage.removeItem("firebaseToken");
     return true;
   } catch (err) {
     toast.error("logout failed");
